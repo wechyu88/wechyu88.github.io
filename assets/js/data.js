@@ -1,5 +1,5 @@
 // 网站数据配置文件
-// 最后更新: 2025/10/29 20:57:41
+// 最后更新: 2025/10/29 21:06:37
 
 const siteData = {
   "personal": {
@@ -9,7 +9,7 @@ const siteData = {
     "affiliation": "浙江海洋大学",
     "email": "your-email@example.com",
     "avatar": "images/Avatar.jpg",
-    "bio": "我是温程远（Chengyuan Wen），目前在浙江海洋大学从事人工智能、计算机视觉、机器学习等领域的研究和教学工作。我的研究兴趣包括深度学习、计算机视觉、机器人技术以及数据挖掘等方向。",
+    "bio": "我是温成远（Chengyuan Wen），目前在浙江海洋大学从事人工智能、计算机视觉、机器学习等领域的研究和教学工作。我的研究兴趣包括深度学习、计算机视觉、机器人技术以及数据挖掘等方向。",
     "introduction": "在学术研究过程中，我注重理论与实践相结合，致力于将先进的人工智能技术应用于实际问题的解决。同时，我也热衷于指导学生参与科研项目和学科竞赛，培养学生的创新能力和实践能力。"
   },
   "research": [
@@ -116,7 +116,7 @@ const siteData = {
     "patents": [
       {
         "title": "一种基于深度学习的智能机器人导航系统",
-        "inventors": "温程远, 张三",
+        "inventors": "温成远, 张三",
         "number": "CN202410001234",
         "date": "2024-05",
         "status": "已授权",
@@ -170,7 +170,7 @@ const siteData = {
     "textbooks": [
       {
         "title": "深度学习实战教程",
-        "authors": "温程远 等",
+        "authors": "温成远 等",
         "publisher": "清华大学出版社",
         "date": "2023-08",
         "isbn": "978-7-302-xxxxx-x",
