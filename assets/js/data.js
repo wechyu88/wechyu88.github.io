@@ -1,9 +1,9 @@
 // 网站数据配置文件
-// 最后更新: 2025/10/29 20:57:35
+// 最后更新: 2025/10/29 20:57:41
 
 const siteData = {
   "personal": {
-    "name": "温成远",
+    "name": "温程远",
     "nameEn": "Chengyuan Wen",
     "title": "副教授",
     "affiliation": "浙江海洋大学",
