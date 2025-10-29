@@ -1,43 +1,146 @@
-// 内容管理系统 (CMS)
-// 通过按 Ctrl+Shift+M 打开管理面板
+// 内容管理系统 (CMS) - 安全增强版
+// 需要密码验证才能访问
 
 class ContentManagementSystem {
     constructor() {
         this.data = siteData;
         this.isOpen = false;
+        this.isAuthenticated = false;
+        this.config = this.loadConfig();
+        this.clickCount = 0;
+        this.clickTimer = null;
         this.init();
     }
 
+    // 加载配置（密码等）
+    loadConfig() {
+        const defaultConfig = {
+            // 默认密码：admin123（请在首次使用后修改）
+            password: 'admin123',
+            // GitHub配置（可选）
+            github: {
+                username: '',
+                repo: '',
+                token: '' // Personal Access Token
+            }
+        };
+
+        // 尝试从localStorage加载配置
+        const savedConfig = localStorage.getItem('cms_config');
+        if (savedConfig) {
+            try {
+                return { ...defaultConfig, ...JSON.parse(savedConfig) };
+            } catch (e) {
+                return defaultConfig;
+            }
+        }
+        return defaultConfig;
+    }
+
+    // 保存配置
+    saveConfig() {
+        localStorage.setItem('cms_config', JSON.stringify(this.config));
+    }
+
     init() {
-        // 监听快捷键 Ctrl+Shift+M
+        // 监听快捷键 Ctrl+Alt+A (避免与浏览器快捷键冲突)
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'M') {
+            if (e.ctrlKey && e.altKey && e.key === 'a') {
                 e.preventDefault();
-                this.togglePanel();
+                this.showPasswordPrompt();
             }
         });
 
-        // 添加隐藏的触发区域（右下角小点）
-        this.createHiddenTrigger();
+        // 创建隐藏触发方式：连续点击页面标题3次
+        this.createSecretTrigger();
     }
 
-    createHiddenTrigger() {
+    createSecretTrigger() {
+        // 找到页面标题或logo元素
+        const triggers = document.querySelectorAll('h1, h2.description, .sidebar-header h2');
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                this.clickCount++;
+
+                // 清除之前的定时器
+                if (this.clickTimer) {
+                    clearTimeout(this.clickTimer);
+                }
+
+                // 如果在1秒内连续点击3次，显示密码提示
+                if (this.clickCount >= 3) {
+                    this.showPasswordPrompt();
+                    this.clickCount = 0;
+                } else {
+                    // 1秒后重置计数
+                    this.clickTimer = setTimeout(() => {
+                        this.clickCount = 0;
+                    }, 1000);
+                }
+            });
+        });
+
+        // 添加一个更明显的触发区域（但只有管理员知道）
+        // 在页面底部创建一个小区域
         const trigger = document.createElement('div');
         trigger.style.cssText = `
             position: fixed;
-            bottom: 10px;
-            right: 10px;
-            width: 10px;
-            height: 10px;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
             background: transparent;
             cursor: pointer;
             z-index: 9998;
+            border-radius: 50%;
         `;
-        trigger.onclick = () => this.togglePanel();
+        trigger.title = ''; // 不显示提示
+        trigger.addEventListener('dblclick', () => {
+            this.showPasswordPrompt();
+        });
         document.body.appendChild(trigger);
     }
 
+    // 显示密码输入提示
+    showPasswordPrompt() {
+        if (this.isAuthenticated) {
+            this.togglePanel();
+            return;
+        }
+
+        const password = prompt('请输入管理员密码：\n\n提示：\n• 默认密码：admin123\n• 首次使用后请在CMS设置中修改密码\n• 按Ctrl+Alt+A或连续点击标题3次打开CMS');
+
+        if (password === null) {
+            return; // 用户取消
+        }
+
+        if (this.verifyPassword(password)) {
+            this.isAuthenticated = true;
+            // 保存认证状态（仅在本次会话有效）
+            sessionStorage.setItem('cms_authenticated', 'true');
+            this.togglePanel();
+        } else {
+            alert('❌ 密码错误！请重试。\n\n忘记密码？请检查 assets/js/cms.js 文件中的默认密码。');
+        }
+    }
+
+    // 验证密码
+    verifyPassword(inputPassword) {
+        return inputPassword === this.config.password;
+    }
+
+    // 检查会话认证状态
+    checkSessionAuth() {
+        return sessionStorage.getItem('cms_authenticated') === 'true';
+    }
+
     togglePanel() {
+        if (!this.checkSessionAuth() && !this.isAuthenticated) {
+            this.showPasswordPrompt();
+            return;
+        }
+
         if (this.isOpen) {
             this.closePanel();
         } else {
@@ -55,7 +158,10 @@ class ContentManagementSystem {
             <div class="cms-container">
                 <div class="cms-header">
                     <h2>🔧 内容管理系统</h2>
-                    <button class="cms-close" onclick="cms.closePanel()">×</button>
+                    <div>
+                        <button class="cms-btn" onclick="cms.showSettings()" style="margin-right: 10px;">⚙️ 设置</button>
+                        <button class="cms-close" onclick="cms.closePanel()">×</button>
+                    </div>
                 </div>
                 <div class="cms-tabs">
                     <button class="cms-tab active" data-tab="personal">个人信息</button>
@@ -70,8 +176,9 @@ class ContentManagementSystem {
                     <div id="cms-tab-content"></div>
                 </div>
                 <div class="cms-footer">
-                    <button class="cms-btn cms-btn-primary" onclick="cms.saveData()">💾 保存更改</button>
-                    <button class="cms-btn" onclick="cms.downloadData()">📥 下载数据</button>
+                    <button class="cms-btn cms-btn-primary" onclick="cms.saveData()">💾 保存到本地</button>
+                    <button class="cms-btn cms-btn-primary" onclick="cms.saveToGitHub()">☁️ 保存到GitHub</button>
+                    <button class="cms-btn" onclick="cms.downloadData()">📥 下载备份</button>
                     <button class="cms-btn" onclick="cms.uploadData()">📤 上传数据</button>
                 </div>
             </div>
@@ -89,6 +196,209 @@ class ContentManagementSystem {
         if (panel) {
             panel.remove();
             this.isOpen = false;
+        }
+    }
+
+    // 显示设置面板
+    showSettings() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>⚙️ 系统设置</h3>
+
+            <div class="cms-card">
+                <h4>🔒 安全设置</h4>
+                <div class="cms-form-group">
+                    <label>当前密码</label>
+                    <input type="password" id="current-password" placeholder="输入当前密码" />
+                </div>
+                <div class="cms-form-group">
+                    <label>新密码</label>
+                    <input type="password" id="new-password" placeholder="输入新密码" />
+                </div>
+                <div class="cms-form-group">
+                    <label>确认新密码</label>
+                    <input type="password" id="confirm-password" placeholder="再次输入新密码" />
+                </div>
+                <button class="cms-btn cms-btn-primary" onclick="cms.changePassword()">修改密码</button>
+            </div>
+
+            <div class="cms-card">
+                <h4>🔗 GitHub 集成</h4>
+                <p style="color: #666; margin-bottom: 15px;">
+                    配置GitHub后，可以直接将更改推送到你的仓库。<br>
+                    <a href="https://github.com/settings/tokens" target="_blank">点击这里</a>创建Personal Access Token。
+                </p>
+                <div class="cms-form-group">
+                    <label>GitHub 用户名</label>
+                    <input type="text" id="github-username" value="${this.config.github.username}" placeholder="例如: wechyu88" />
+                </div>
+                <div class="cms-form-group">
+                    <label>仓库名</label>
+                    <input type="text" id="github-repo" value="${this.config.github.repo}" placeholder="例如: wechyu88.github.io" />
+                </div>
+                <div class="cms-form-group">
+                    <label>Personal Access Token</label>
+                    <input type="password" id="github-token" value="${this.config.github.token}" placeholder="ghp_xxxxxxxxxxxx" />
+                    <small style="color: #999;">需要 'repo' 权限</small>
+                </div>
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveGitHubConfig()">保存GitHub配置</button>
+                <button class="cms-btn" onclick="cms.testGitHubConnection()">测试连接</button>
+            </div>
+
+            <div class="cms-card">
+                <h4>ℹ️ 使用说明</h4>
+                <ul style="line-height: 1.8;">
+                    <li><strong>打开CMS：</strong>按 Ctrl+Alt+A 或连续点击页面标题3次</li>
+                    <li><strong>保存到本地：</strong>数据保存在浏览器，刷新页面后仍然存在</li>
+                    <li><strong>保存到GitHub：</strong>需要配置GitHub信息，将自动提交到仓库</li>
+                    <li><strong>下载备份：</strong>导出JSON文件，可以在其他电脑上导入</li>
+                    <li><strong>密码保护：</strong>只有输入正确密码才能访问CMS</li>
+                </ul>
+            </div>
+
+            <div class="cms-card">
+                <h4>⚠️ 注意事项</h4>
+                <ul style="line-height: 1.8; color: #e74c3c;">
+                    <li>请务必记住你的密码，忘记密码需要修改代码文件</li>
+                    <li>GitHub Token是敏感信息，请勿泄露给他人</li>
+                    <li>建议定期下载数据备份</li>
+                    <li>修改密码后，所有设备需要重新登录</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    // 修改密码
+    changePassword() {
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert('❌ 请填写所有字段');
+            return;
+        }
+
+        if (currentPassword !== this.config.password) {
+            alert('❌ 当前密码错误');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert('❌ 两次输入的新密码不一致');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            alert('❌ 密码长度至少6位');
+            return;
+        }
+
+        this.config.password = newPassword;
+        this.saveConfig();
+        alert('✅ 密码修改成功！下次登录时请使用新密码。');
+
+        // 清空输入框
+        document.getElementById('current-password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-password').value = '';
+    }
+
+    // 保存GitHub配置
+    saveGitHubConfig() {
+        this.config.github.username = document.getElementById('github-username').value;
+        this.config.github.repo = document.getElementById('github-repo').value;
+        this.config.github.token = document.getElementById('github-token').value;
+
+        this.saveConfig();
+        alert('✅ GitHub配置已保存');
+    }
+
+    // 测试GitHub连接
+    async testGitHubConnection() {
+        if (!this.config.github.username || !this.config.github.repo || !this.config.github.token) {
+            alert('❌ 请先完整填写GitHub配置信息');
+            return;
+        }
+
+        const url = `https://api.github.com/repos/${this.config.github.username}/${this.config.github.repo}`;
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${this.config.github.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(`✅ 连接成功！\n\n仓库: ${data.full_name}\n描述: ${data.description || '无'}`);
+            } else {
+                alert(`❌ 连接失败！\n\n状态码: ${response.status}\n请检查用户名、仓库名和Token是否正确。`);
+            }
+        } catch (error) {
+            alert(`❌ 连接失败！\n\n错误: ${error.message}`);
+        }
+    }
+
+    // 保存到GitHub
+    async saveToGitHub() {
+        if (!this.config.github.username || !this.config.github.repo || !this.config.github.token) {
+            alert('❌ 请先在设置中配置GitHub信息');
+            this.showSettings();
+            return;
+        }
+
+        if (!confirm('确定要将更改推送到GitHub吗？\n\n这将更新你的GitHub仓库中的数据文件。')) {
+            return;
+        }
+
+        try {
+            // 获取当前文件的SHA
+            const getFileUrl = `https://api.github.com/repos/${this.config.github.username}/${this.config.github.repo}/contents/assets/js/data.js`;
+
+            const getResponse = await fetch(getFileUrl, {
+                headers: {
+                    'Authorization': `token ${this.config.github.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            let sha = null;
+            if (getResponse.ok) {
+                const fileData = await getResponse.json();
+                sha = fileData.sha;
+            }
+
+            // 准备新的文件内容
+            const content = `// 网站数据配置文件\n// 最后更新: ${new Date().toLocaleString()}\n\nconst siteData = ${JSON.stringify(this.data, null, 2)};\n\n// 导出数据供其他模块使用\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = siteData;\n}`;
+
+            const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+            // 更新文件
+            const updateResponse = await fetch(getFileUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${this.config.github.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Update site data via CMS - ${new Date().toLocaleString()}`,
+                    content: encodedContent,
+                    sha: sha
+                })
+            });
+
+            if (updateResponse.ok) {
+                alert('✅ 成功保存到GitHub！\n\n更改已推送到你的仓库。');
+            } else {
+                const error = await updateResponse.json();
+                alert(`❌ 保存失败！\n\n${error.message || '未知错误'}`);
+            }
+        } catch (error) {
+            alert(`❌ 保存失败！\n\n错误: ${error.message}\n\n请检查网络连接和GitHub配置。`);
         }
     }
 
@@ -188,6 +498,7 @@ class ContentManagementSystem {
                 display: flex;
                 gap: 10px;
                 justify-content: flex-end;
+                flex-wrap: wrap;
             }
             .cms-btn {
                 padding: 10px 20px;
@@ -232,12 +543,21 @@ class ContentManagementSystem {
                 min-height: 100px;
                 resize: vertical;
             }
+            .cms-form-group small {
+                display: block;
+                margin-top: 5px;
+                color: #999;
+            }
             .cms-card {
                 background: #f9f9f9;
-                padding: 15px;
-                margin-bottom: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
                 border-radius: 8px;
                 border-left: 4px solid #3498db;
+            }
+            .cms-card h4 {
+                margin-top: 0;
+                color: #2c3e50;
             }
             .cms-list-item {
                 display: flex;
@@ -251,21 +571,6 @@ class ContentManagementSystem {
             }
             .cms-list-item:hover {
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            .cms-export-section {
-                background: #f9f9f9;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 20px;
-            }
-            .cms-export-section h3 {
-                margin-top: 0;
-                color: #2c3e50;
-            }
-            .cms-export-buttons {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
             }
         `;
         document.head.appendChild(styles);
@@ -390,7 +695,6 @@ class ContentManagementSystem {
                 <h4>🏆 获奖 (${this.data.achievements.awards.length}项)</h4>
                 <button class="cms-btn" onclick="cms.addAchievement('award')">+ 添加</button>
             </div>
-            <p style="margin-top:20px; color:#666;">点击"添加"按钮可以添加新的成果条目</p>
         `;
     }
 
@@ -456,26 +760,23 @@ class ContentManagementSystem {
         return `
             <h3>导出功能</h3>
 
-            <div class="cms-export-section">
+            <div class="cms-card">
                 <h3>📅 时间线简历</h3>
                 <p>导出按时间顺序排列的个人学术简历，包含所有教育背景、工作经历、研究成果等。</p>
-                <div class="cms-export-buttons">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
                     <button class="cms-btn cms-btn-primary" onclick="cms.exportTimelineCV('markdown')">
                         导出为 Markdown
                     </button>
                     <button class="cms-btn cms-btn-primary" onclick="cms.exportTimelineCV('html')">
                         导出为 HTML
                     </button>
-                    <button class="cms-btn cms-btn-primary" onclick="cms.exportTimelineCV('pdf')">
-                        导出为 PDF
-                    </button>
                 </div>
             </div>
 
-            <div class="cms-export-section">
+            <div class="cms-card">
                 <h3>📋 研究成果列表</h3>
                 <p>导出所有研究成果的完整列表，包括论文、专利、项目、获奖等。</p>
-                <div class="cms-export-buttons">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
                     <button class="cms-btn cms-btn-primary" onclick="cms.exportAchievementsList('markdown')">
                         导出为 Markdown
                     </button>
@@ -488,20 +789,10 @@ class ContentManagementSystem {
                 </div>
             </div>
 
-            <div class="cms-export-section">
-                <h3>📊 成果统计报告</h3>
-                <p>生成各类成果的统计报告和可视化图表。</p>
-                <div class="cms-export-buttons">
-                    <button class="cms-btn cms-btn-primary" onclick="cms.exportStatistics()">
-                        生成统计报告
-                    </button>
-                </div>
-            </div>
-
-            <div class="cms-export-section">
+            <div class="cms-card">
                 <h3>💾 完整数据备份</h3>
                 <p>导出网站所有数据的JSON格式备份文件。</p>
-                <div class="cms-export-buttons">
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button class="cms-btn" onclick="cms.downloadData()">
                         下载数据备份
                     </button>
@@ -518,10 +809,6 @@ class ContentManagementSystem {
             content = this.generateTimelineCVMarkdown();
             this.downloadFile('academic_cv_timeline.md', content, 'text/markdown');
         } else if (format === 'html') {
-            content = this.generateTimelineCVHTML();
-            this.downloadFile('academic_cv_timeline.html', content, 'text/html');
-        } else if (format === 'pdf') {
-            alert('PDF导出功能需要服务器支持，请先导出HTML版本，然后使用浏览器打印为PDF');
             content = this.generateTimelineCVHTML();
             this.downloadFile('academic_cv_timeline.html', content, 'text/html');
         }
@@ -671,8 +958,6 @@ ${this.markdownToHTML(md)}
         body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.6; }
         h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
         h2 { color: #2c3e50; margin-top: 30px; background: #ecf0f1; padding: 10px; border-left: 4px solid #3498db; }
-        ul { list-style: none; padding-left: 0; }
-        li { margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -724,8 +1009,17 @@ ${this.markdownToHTML(md)}
     // 保存数据到localStorage
     saveData() {
         try {
+            // 更新个人信息
+            this.data.personal.name = document.getElementById('name')?.value || this.data.personal.name;
+            this.data.personal.nameEn = document.getElementById('nameEn')?.value || this.data.personal.nameEn;
+            this.data.personal.title = document.getElementById('title')?.value || this.data.personal.title;
+            this.data.personal.affiliation = document.getElementById('affiliation')?.value || this.data.personal.affiliation;
+            this.data.personal.email = document.getElementById('email')?.value || this.data.personal.email;
+            this.data.personal.bio = document.getElementById('bio')?.value || this.data.personal.bio;
+            this.data.personal.introduction = document.getElementById('introduction')?.value || this.data.personal.introduction;
+
             localStorage.setItem('siteData', JSON.stringify(this.data));
-            alert('✅ 数据已保存到浏览器本地存储');
+            alert('✅ 数据已保存到浏览器本地存储\n\n注意：这只是临时保存，建议使用"保存到GitHub"功能永久保存。');
         } catch (e) {
             alert('❌ 保存失败: ' + e.message);
         }
@@ -734,7 +1028,7 @@ ${this.markdownToHTML(md)}
     // 下载数据为JSON文件
     downloadData() {
         const json = JSON.stringify(this.data, null, 2);
-        this.downloadFile('siteData.json', json, 'application/json');
+        this.downloadFile('siteData_backup_' + new Date().toISOString().split('T')[0] + '.json', json, 'application/json');
     }
 
     // 上传数据
@@ -791,7 +1085,6 @@ ${this.markdownToHTML(md)}
             this.showTab('competitions');
         }
     }
-    exportStatistics() { alert('统计报告功能待实现'); }
 }
 
 // 初始化CMS
@@ -799,5 +1092,6 @@ let cms;
 if (typeof window !== 'undefined') {
     window.addEventListener('DOMContentLoaded', () => {
         cms = new ContentManagementSystem();
+        console.log('CMS已加载。按Ctrl+Alt+A打开管理面板。');
     });
 }
