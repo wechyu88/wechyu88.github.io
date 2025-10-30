@@ -1,0 +1,124 @@
+<!-- 期刊论文列表 -->
+<header class="page-header">
+    <h1>📄 期刊论文</h1>
+    <p>Journal Publications</p>
+</header>
+
+<section class="content-card">
+    <div id="journal-list">
+        <!-- 论文列表将由JavaScript动态生成 -->
+    </div>
+</section>
+
+<script>
+    // 渲染期刊论文列表
+    const journals = getPapersByType('journal');
+    const journalListHTML = journals.map(paper => `
+        <div class="paper-item" data-id="${paper.id}">
+            <h3>${paper.title}</h3>
+            <p class="meta">
+                <strong>作者：</strong>${paper.authors}<br>
+                <strong>发表于：</strong>${paper.venue}, ${paper.year}<br>
+                <strong>级别：</strong>${paper.level}
+            </p>
+            ${paper.abstract ? `
+                <details class="paper-details">
+                    <summary>查看摘要</summary>
+                    <p class="abstract">${paper.abstract}</p>
+                </details>
+            ` : ''}
+            ${paper.doi ? `<p><strong>DOI：</strong><a href="https://doi.org/${paper.doi}" target="_blank">${paper.doi}</a></p>` : ''}
+            ${paper.pdf ? `
+                <p class="actions">
+                    <a href="${paper.pdf}" class="btn btn-primary" download>
+                        📄 下载PDF
+                    </a>
+                </p>
+            ` : ''}
+        </div>
+    `).join('');
+
+    document.getElementById('journal-list').innerHTML = journalListHTML || '<p class="empty-message">暂无期刊论文</p>';
+</script>
+
+<style>
+    .paper-item {
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .paper-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .paper-item h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .paper-item .meta {
+        color: #7f8c8d;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .paper-details {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .paper-details summary {
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--primary-color);
+        user-select: none;
+    }
+
+    .paper-details summary:hover {
+        text-decoration: underline;
+    }
+
+    .abstract {
+        margin-top: 10px;
+        line-height: 1.8;
+        color: #34495e;
+    }
+
+    .actions {
+        margin-top: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>

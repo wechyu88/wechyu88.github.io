@@ -1,0 +1,94 @@
+<!-- 学生指导页面 -->
+<header class="page-header">
+    <h1>👨‍🎓 学生指导</h1>
+    <p>Student Supervision</p>
+</header>
+
+<section class="content-card">
+    <h2>在读学生</h2>
+    <div id="current-students">
+        <!-- 由JavaScript动态生成 -->
+    </div>
+</section>
+
+<section class="content-card">
+    <h2>已毕业学生</h2>
+    <div id="graduated-students">
+        <!-- 由JavaScript动态生成 -->
+    </div>
+</section>
+
+<script>
+    // 渲染在读学生
+    const currentStudents = getStudentsByStatus('在读');
+    document.getElementById('current-students').innerHTML = 
+        renderStudents(currentStudents.map(s => s.id)) || '<p class="empty-message">暂无在读学生</p>';
+
+    // 渲染已毕业学生
+    const graduatedStudents = getStudentsByStatus('已毕业');
+    document.getElementById('graduated-students').innerHTML = 
+        renderStudents(graduatedStudents.map(s => s.id)) || '<p class="empty-message">暂无已毕业学生</p>';
+</script>
+
+<style>
+    .student-card {
+        display: flex;
+        gap: 20px;
+        padding: 25px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .student-card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .student-photo {
+        flex-shrink: 0;
+    }
+
+    .student-photo img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid var(--secondary-color);
+    }
+
+    .student-info {
+        flex: 1;
+    }
+
+    .student-info h4 {
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .graduation-info {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .achievement-list {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+
+    .achievement-list li {
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>

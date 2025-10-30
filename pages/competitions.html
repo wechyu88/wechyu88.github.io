@@ -1,511 +1,106 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大学生竞赛指导 - Chengyuan Wen</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body>
-    <!-- 侧边栏导航 -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-avatar">
-                <img src="../images/Avatar.jpg" alt="温程远">
-            </div>
-            <h2 id="nav-name">温程远</h2>
-            <p id="nav-title">副教授</p>
-            <p id="nav-affiliation">浙江海洋大学</p>
-        </div>
+<!-- 竞赛指导页面 -->
+<header class="page-header">
+    <h1>🏆 竞赛指导</h1>
+    <p>Competition Guidance</p>
+</header>
 
-        <nav>
-            <ul class="nav-menu">
-                <!-- 研究方向 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>🔬</i> 研究方向
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/research/ai-robotics.html" class="nav-link">人工智能与机器人</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/research/computer-vision.html" class="nav-link">计算机视觉</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/research/machine-learning.html" class="nav-link">机器学习</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/research/data-mining.html" class="nav-link">数据挖掘</a>
-                        </li>
-                    </ul>
-                </li>
+<section class="content-card">
+    <h2>竞赛指导理念</h2>
+    <markdown>
+我一直重视通过学科竞赛培养学生的**创新能力**和**实践能力**。通过指导学生参加各类竞赛，不仅能够提升学生的专业技能，还能培养团队协作精神和解决实际问题的能力。
 
-                <!-- 研究成果 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>📚</i> 研究成果
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/achievements/all.html" class="nav-link">总成果</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/achievements/education.html" class="nav-link">博士硕士期间</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/achievements/work.html" class="nav-link">工作期间</a>
-                        </li>
-                    </ul>
-                </li>
+### 指导特色
+- 💡 **创新导向**：鼓励学生提出原创性想法
+- 🤝 **团队协作**：培养团队合作精神
+- 🎯 **实战演练**：注重实际应用能力
+- 📈 **持续跟踪**：全程指导和反馈
+    </markdown>
+</section>
 
-                <!-- 教学工作 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>📖</i> 教学工作
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/teaching/courses.html" class="nav-link">授课课程</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/teaching/textbooks.html" class="nav-link">编写教材</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/teaching/awards.html" class="nav-link">教学获奖</a>
-                        </li>
-                    </ul>
-                </li>
+<section class="content-card">
+    <h2>竞赛获奖记录</h2>
+    <div id="competition-list"></div>
+</section>
 
-                <!-- 学生指导 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>👨‍🎓</i> 学生指导
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/students/current.html" class="nav-link">在读学生</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/students/graduated.html" class="nav-link">已毕业学生</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- 竞赛指导 -->
-                <li class="nav-item">
-                    <a href="../pages/competitions.html" class="nav-link active">
-                        <i>🏆</i> 竞赛指导
-                    </a>
-                </li>
-
-                <!-- 学术服务 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>🤝</i> 学术服务
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/service/review.html" class="nav-link">审稿服务</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/service/committee.html" class="nav-link">学术委员会</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- 学术活动 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>🎤</i> 学术活动
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="../pages/activities/talks.html" class="nav-link">学术报告</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../pages/activities/visits.html" class="nav-link">访问交流</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- 荣誉奖项 -->
-                <li class="nav-item">
-                    <a href="../pages/honors.html" class="nav-link">
-                        <i>🌟</i> 荣誉奖项
-                    </a>
-                </li>
-
-                <!-- 新闻动态 -->
-                <li class="nav-item">
-                    <a href="../pages/news.html" class="nav-link">
-                        <i>📰</i> 新闻动态
-                    </a>
-                </li>
-
-                <!-- 资源下载 -->
-                <li class="nav-item">
-                    <a href="../pages/resources.html" class="nav-link">
-                        <i>📦</i> 资源下载
-                    </a>
-                </li>
-
-                <!-- 联系方式 -->
-                <li class="nav-item">
-                    <a href="../pages/contact.html" class="nav-link">
-                        <i>📧</i> 联系方式
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- 主内容区域 -->
-    <main class="main-content">
-        <div class="container">
-            <!-- 页面头部 -->
-            <header class="page-header">
-                <h1>大学生竞赛指导</h1>
-                <p>Undergraduate Student Competitions</p>
-            </header>
-
-            <!-- 竞赛指导概述 -->
-            <section class="content-card">
-                <h2>竞赛指导理念</h2>
-                <p>
-                    我一直重视通过学科竞赛培养学生的创新能力和实践能力。通过指导学生参加各类竞赛，
-                    不仅能够提升学生的专业技能，还能培养团队协作精神和解决实际问题的能力。
-                </p>
-                <p>
-                    多年来，我指导的学生团队在国家级、省级各类竞赛中屡获佳绩，
-                    涵盖人工智能、机器人、数学建模、创新创业等多个领域。
-                </p>
-            </section>
-
-            <!-- 竞赛获奖统计 -->
-            <section class="content-card">
-                <h2>获奖统计</h2>
-                <div class="research-grid">
-                    <div class="research-item">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">30+</h3>
-                            <p>国家级奖项</p>
-                        </div>
-                    </div>
-                    <div class="research-item">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">50+</h3>
-                            <p>省级奖项</p>
-                        </div>
-                    </div>
-                    <div class="research-item">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">15</h3>
-                            <p>特等奖/一等奖</p>
-                        </div>
-                    </div>
-                    <div class="research-item">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">100+</h3>
-                            <p>参赛学生</p>
-                        </div>
-                    </div>
+<script>
+    // 渲染竞赛列表
+    const competitions = globalData.competitions;
+    const competitionHTML = competitions.map(comp => `
+        <div class="competition-item">
+            <h3>${comp.name} - ${comp.award}</h3>
+            <p class="meta">
+                <strong>时间：</strong>${comp.date}<br>
+                <strong>项目：</strong>${comp.project}<br>
+                <strong>学生：</strong>${comp.students.join(', ')}
+            </p>
+            ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
+            ${comp.images && comp.images.length > 0 ? `
+                <div class="competition-gallery">
+                    ${comp.images.map(img => `
+                        <img src="${img}" alt="${comp.name}">
+                    `).join('')}
                 </div>
-            </section>
-
-            <!-- 中国国际大学生创新大赛 -->
-            <section class="content-card">
-                <h2>中国国际大学生创新大赛（原"互联网+"大赛）</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>智能机器人导航系统</h4>
-                        <p class="meta">2024年 | 国家级金奖 | 团队成员：赵六、李明、王芳</p>
-                        <p>
-                            项目开发了一套智能机器人导航系统，应用于工业场景，
-                            获得了评委的高度认可，并已与多家企业达成合作意向。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="项目展示">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="获奖现场">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="团队合影">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>AI医疗影像辅助诊断平台</h4>
-                        <p class="meta">2023年 | 国家级银奖 | 团队成员：张华、刘强、陈雪</p>
-                        <p>
-                            基于深度学习的医疗影像辅助诊断系统，能够快速准确地识别多种疾病，
-                            提高医生的诊断效率。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="系统演示">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="获奖证书">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>智慧农业监测系统</h4>
-                        <p class="meta">2022年 | 省级金奖 | 团队成员：周伟、孙丽、吴涛</p>
-                        <p>
-                            利用物联网和人工智能技术，实现农业生产的智能化监测和管理。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- 全国大学生电子设计竞赛 -->
-            <section class="content-card">
-                <h2>全国大学生电子设计竞赛</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>智能物流搬运机器人</h4>
-                        <p class="meta">2024年 | 国家级一等奖 | 团队成员：冯涛、马丽、胡军</p>
-                        <p>
-                            设计并实现了一款智能物流搬运机器人，具备自主导航、路径规划和障碍物避让功能。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="机器人实物">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="测试现场">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="获奖团队">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>无线传感网络监测系统</h4>
-                        <p class="meta">2023年 | 国家级二等奖 | 团队成员：黄鹏、杨静、徐敏</p>
-                        <p>
-                            开发了基于无线传感网络的环境监测系统，实现了实时数据采集和分析。
-                        </p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>智能家居控制系统</h4>
-                        <p class="meta">2022年 | 省级一等奖 | 团队成员：郭亮、韩梅、朱强</p>
-                        <p>
-                            设计了一套完整的智能家居控制系统，支持语音控制和远程操作。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- 全国大学生数学建模竞赛 -->
-            <section class="content-card">
-                <h2>全国大学生数学建模竞赛</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>城市交通流量预测与优化</h4>
-                        <p class="meta">2024年 | 国家级一等奖 | 团队成员：郑梅、林峰、董娜</p>
-                        <p>
-                            运用机器学习方法对城市交通流量进行预测，并提出优化方案，
-                            在实际验证中取得了良好效果。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="模型图表">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="团队讨论">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>疫情传播模型与防控策略</h4>
-                        <p class="meta">2023年 | 国家级二等奖 | 团队成员：何伟、罗丽、钱军</p>
-                        <p>
-                            建立了疫情传播的数学模型，分析不同防控措施的效果。
-                        </p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>电商平台价格优化策略</h4>
-                        <p class="meta">2022年 | 省级一等奖 | 团队成员：沈涛、宋梅、唐强</p>
-                        <p>
-                            针对电商平台的动态定价问题，建立了优化模型并提出了实用策略。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- 中国机器人大赛 -->
-            <section class="content-card">
-                <h2>中国机器人大赛</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>服务机器人项目</h4>
-                        <p class="meta">2024年 | 特等奖 | 团队成员：赵六、姚丽、孟强</p>
-                        <p>
-                            开发了一款具备语音交互、自主导航和物品搬运功能的服务机器人，
-                            在比赛中表现出色，获得特等奖。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="机器人外观">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="比赛现场">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="颁奖典礼">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>机器人足球赛</h4>
-                        <p class="meta">2023年 | 一等奖 | 团队成员：贾涛、夏梅、白强</p>
-                        <p>
-                            参加机器人足球赛项目，实现了多机器人协同控制和智能决策。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- ACM程序设计竞赛 -->
-            <section class="content-card">
-                <h2>ACM国际大学生程序设计竞赛</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>ACM-ICPC区域赛</h4>
-                        <p class="meta">2024年 | 金奖 | 团队成员：石涛、崔梅、毛强</p>
-                        <p>
-                            在ACM-ICPC区域赛中表现出色，解决了多个复杂算法问题，获得金奖。
-                        </p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>省级程序设计大赛</h4>
-                        <p class="meta">2023年 | 特等奖 | 团队成员：龚伟、程丽、邹军</p>
-                        <p>
-                            在省级程序设计大赛中脱颖而出，展现了扎实的编程基础和算法能力。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- 人工智能创新应用大赛 -->
-            <section class="content-card">
-                <h2>全国人工智能创新应用大赛</h2>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>智能文本分析系统</h4>
-                        <p class="meta">2024年 | 一等奖 | 团队成员：邓涛、付梅、谢强</p>
-                        <p>
-                            开发了基于自然语言处理的智能文本分析系统，应用于舆情监测和情感分析。
-                        </p>
-                        <div class="image-gallery">
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="系统界面">
-                            </div>
-                            <div class="gallery-item">
-                                <img src="../assets/images/test/placeholder.jpg" alt="功能演示">
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>计算机视觉应用项目</h4>
-                        <p class="meta">2023年 | 二等奖 | 团队成员：冯涛、彭丽、阎强</p>
-                        <p>
-                            利用计算机视觉技术实现了实时目标检测和跟踪系统。
-                        </p>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- 优秀学生团队 -->
-            <section class="content-card">
-                <h2>优秀学生团队</h2>
-                <div class="students-grid">
-                    <div class="student-card">
-                        <div class="student-photo">
-                            <img src="../assets/images/test/placeholder.jpg" alt="学生照片">
-                        </div>
-                        <div class="student-info">
-                            <h4>赵六 <span class="tag undergraduate">本科生</span></h4>
-                            <p><strong>获奖：</strong>国际大赛金奖、机器人大赛特等奖</p>
-                            <p>表现突出，具有很强的创新能力和实践能力。</p>
-                        </div>
-                    </div>
-
-                    <div class="student-card">
-                        <div class="student-photo">
-                            <img src="../assets/images/test/placeholder.jpg" alt="学生照片">
-                        </div>
-                        <div class="student-info">
-                            <h4>冯涛 <span class="tag undergraduate">本科生</span></h4>
-                            <p><strong>获奖：</strong>电子设计竞赛一等奖、AI大赛二等奖</p>
-                            <p>擅长硬件设计和软件开发，团队协作能力强。</p>
-                        </div>
-                    </div>
-
-                    <div class="student-card">
-                        <div class="student-photo">
-                            <img src="../assets/images/test/placeholder.jpg" alt="学生照片">
-                        </div>
-                        <div class="student-info">
-                            <h4>郑梅 <span class="tag master">硕士生</span></h4>
-                            <p><strong>获奖：</strong>数学建模竞赛国家一等奖</p>
-                            <p>数学基础扎实，善于建模和数据分析。</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 竞赛培训与指导 -->
-            <section class="content-card">
-                <h2>竞赛培训与指导</h2>
-                <p>
-                    为了帮助学生更好地参加竞赛，我定期组织竞赛培训和指导活动：
-                </p>
-                <ul class="achievement-list">
-                    <li class="achievement-item">
-                        <h4>定期培训讲座</h4>
-                        <p>每学期组织多次竞赛专题讲座，涵盖算法、编程、项目管理等内容。</p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>实践指导</h4>
-                        <p>为参赛团队提供一对一的项目指导，帮助解决技术难题。</p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>经验分享</h4>
-                        <p>组织往届获奖团队分享参赛经验，传承竞赛文化。</p>
-                    </li>
-
-                    <li class="achievement-item">
-                        <h4>资源支持</h4>
-                        <p>提供实验室设备、计算资源等支持，保障竞赛项目顺利进行。</p>
-                    </li>
-                </ul>
-            </section>
+            ` : ''}
         </div>
-    </main>
+    `).join('');
 
-    <!-- JavaScript -->
-    <script>
-        function toggleSubmenu(element) {
-            const parent = element.parentElement;
-            parent.classList.toggle('active');
-        }
-    </script>
-</body>
-</html>
+    document.getElementById('competition-list').innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
+</script>
+
+<style>
+    .competition-item {
+        padding: 25px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        transition: all 0.3s;
+    }
+
+    .competition-item:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .competition-item h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .competition-item .meta {
+        color: #7f8c8d;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .description {
+        margin-top: 15px;
+        line-height: 1.8;
+        color: #34495e;
+    }
+
+    .competition-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .competition-gallery img {
+        width: 100%;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+
+    .competition-gallery img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>

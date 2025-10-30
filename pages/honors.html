@@ -1,0 +1,89 @@
+<!-- 荣誉奖项 -->
+<header class="page-header">
+    <h1>🌟 荣誉奖项</h1>
+    <p>Honors & Awards</p>
+</header>
+
+<section class="content-card">
+    <div id="honor-list"></div>
+</section>
+
+<script>
+    // 渲染荣誉列表
+    const honors = globalData.honors;
+    const honorHTML = honors.map(honor => `
+        <div class="honor-item">
+            <h3>${honor.title}</h3>
+            <p class="meta">
+                <strong>级别：</strong>${honor.level}<br>
+                <strong>年度：</strong>${honor.year}<br>
+                <strong>排名：</strong>${honor.rank}
+            </p>
+            ${honor.certificate ? `
+                <p class="actions">
+                    <a href="${honor.certificate}" class="btn btn-primary" download>
+                        🏅 查看证书
+                    </a>
+                </p>
+            ` : ''}
+        </div>
+    `).join('');
+
+    document.getElementById('honor-list').innerHTML = honorHTML ||
+        '<p class="empty-message">暂无荣誉奖项</p>';
+</script>
+
+<style>
+    .honor-item {
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .honor-item:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .honor-item h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .honor-item .meta {
+        color: #7f8c8d;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .actions {
+        margin-top: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>

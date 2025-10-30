@@ -1,0 +1,63 @@
+<!-- 计算机视觉研究方向 -->
+<header class="page-header">
+    <h1>👁️ 计算机视觉</h1>
+    <p>Computer Vision</p>
+</header>
+
+<section class="content-card">
+    <h2>研究方向介绍</h2>
+    <markdown>
+## 研究内容
+
+本方向专注于**计算机视觉**及其应用研究，主要包括：
+
+- **目标检测与识别**：快速准确的目标检测算法
+- **图像分割**：语义分割、实例分割技术
+- **三维重建**：从二维图像恢复三维场景
+- **视觉跟踪**：多目标跟踪与行为分析
+
+## 应用领域
+
+🚗 **智能驾驶**：环境感知、障碍物检测  
+🏭 **工业检测**：产品质量检测、缺陷识别  
+🏥 **医疗影像**：病灶识别、辅助诊断  
+🛡️ **智能监控**：异常行为检测、人员识别
+    </markdown>
+</section>
+
+<section class="content-card">
+    <h2>相关论文</h2>
+    <div id="cv-papers"></div>
+</section>
+
+<script>
+    // 筛选计算机视觉相关论文（这里简单演示，实际应根据关键词筛选）
+    const cvPapers = globalData.papers.filter(p => 
+        p.keywords && p.keywords.some(k => k.includes('视觉') || k.includes('图像'))
+    );
+    document.getElementById('cv-papers').innerHTML = renderPapers(cvPapers.map(p => p.id)) ||
+        '<p class="empty-message">暂无相关论文</p>';
+</script>
+
+<style>
+    .paper-item {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .paper-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>
