@@ -180,8 +180,8 @@ class PageRenderer {
             <section class="content-card fade-in editable-section" data-section="research-areas">
                 <h2>研究领域</h2>
                 <div class="research-grid">
-                    ${this.data.research.map(r => `
-                        <div class="research-item editable-item" data-type="research" data-id="${r.id}">
+                    ${this.data.research.map((r, index) => `
+                        <div class="research-item editable-item" data-type="research" data-index="${index}" data-id="${r.id}">
                             <div class="research-image">
                                 <img src="${r.image}" alt="${r.title}">
                             </div>
@@ -307,8 +307,10 @@ class PageRenderer {
             <section class="content-card editable-section" data-section="journals-${filter}">
                 <h2>📄 期刊论文 (${journals.length}篇)</h2>
                 <ul class="achievement-list">
-                    ${journals.map((j, index) => `
-                        <li class="achievement-item editable-item" data-type="journal" data-index="${index}">
+                    ${journals.map((j) => {
+                        const originalIndex = achievements.journals.findIndex(item => item.title === j.title && item.year === j.year);
+                        return `
+                        <li class="achievement-item editable-item" data-type="journal" data-index="${originalIndex}">
                             <h4>${j.title}</h4>
                             <p class="meta">${j.authors}</p>
                             <p class="meta">${j.venue}, ${j.year} | ${j.level}</p>
@@ -316,7 +318,8 @@ class PageRenderer {
                             ${j.doi ? `<p><strong>DOI:</strong> ${j.doi}</p>` : ''}
                             ${j.pdf ? `<p><a href="${j.pdf}" target="_blank" class="btn btn-primary">下载PDF</a></p>` : ''}
                         </li>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </ul>
             </section>
 
@@ -324,15 +327,18 @@ class PageRenderer {
             <section class="content-card editable-section" data-section="conferences-${filter}">
                 <h2>📋 会议论文 (${conferences.length}篇)</h2>
                 <ul class="achievement-list">
-                    ${conferences.map((c, index) => `
-                        <li class="achievement-item editable-item" data-type="conference" data-index="${index}">
+                    ${conferences.map((c) => {
+                        const originalIndex = achievements.conferences.findIndex(item => item.title === c.title && item.year === c.year);
+                        return `
+                        <li class="achievement-item editable-item" data-type="conference" data-index="${originalIndex}">
                             <h4>${c.title}</h4>
                             <p class="meta">${c.authors}</p>
                             <p class="meta">${c.venue}, ${c.year} | ${c.level}</p>
                             ${c.abstract ? `<p>${c.abstract}</p>` : ''}
                             ${c.pdf ? `<p><a href="${c.pdf}" target="_blank" class="btn btn-primary">下载PDF</a></p>` : ''}
                         </li>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </ul>
             </section>
 
@@ -340,14 +346,17 @@ class PageRenderer {
             <section class="content-card editable-section" data-section="patents-${filter}">
                 <h2>🔬 专利 (${patents.length}项)</h2>
                 <ul class="achievement-list">
-                    ${patents.map((p, index) => `
-                        <li class="achievement-item editable-item" data-type="patent" data-index="${index}">
+                    ${patents.map((p) => {
+                        const originalIndex = achievements.patents.findIndex(item => item.number === p.number);
+                        return `
+                        <li class="achievement-item editable-item" data-type="patent" data-index="${originalIndex}">
                             <h4>${p.title}</h4>
                             <p class="meta">发明人：${p.inventors}</p>
                             <p class="meta">专利号：${p.number} | 状态：${p.status} | ${p.date}</p>
                             ${p.certificate ? `<p><a href="${p.certificate}" target="_blank" class="btn btn-primary">查看证书</a></p>` : ''}
                         </li>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </ul>
             </section>
 
@@ -499,8 +508,10 @@ class PageRenderer {
 }
 
 // 初始化路由
-const router = new SPARouter();
-const renderer = new PageRenderer();
+window.router = new SPARouter();
+window.renderer = new PageRenderer();
+const router = window.router;
+const renderer = window.renderer;
 
 // 注册所有路由
 router.register('/', () => {
