@@ -1,13 +1,13 @@
 // 网站数据配置文件
-// 最后更新: 2025/10/30 13:29:46
+// 最后更新: 2025/10/30 13:31:03
 
 const siteData = {
   "personal": {
     "name": "温程远",
     "nameEn": "Chengyuan Wen",
-    "title": "讲师",
+    "title": "副教授",
     "affiliation": "浙江海洋大学",
-    "email": "your-email@example.com",
+    "email": "wechyu@zjou.edu.cn",
     "avatar": "images/Avatar.jpg",
     "bio": "我是温程远（Chengyuan Wen），目前在浙江海洋大学从事人工智能、计算机视觉、机器学习等领域的研究和教学工作。我的研究兴趣包括深度学习、计算机视觉、机器人技术以及数据挖掘等方向。",
     "introduction": "在学术研究过程中，我注重理论与实践相结合，致力于将先进的人工智能技术应用于实际问题的解决。同时，我也热衷于指导学生参与科研项目和学科竞赛，培养学生的创新能力和实践能力。"
