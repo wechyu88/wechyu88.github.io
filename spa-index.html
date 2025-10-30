@@ -188,7 +188,7 @@
         }
 
         // 更新侧边栏信息
-        function updateSidebar() {
+        window.updateSidebar = function() {
             if (typeof siteData !== 'undefined' && siteData.personal) {
                 const p = siteData.personal;
                 document.getElementById('sidebar-name').textContent = p.name;
@@ -208,7 +208,7 @@
         }
 
         // 页面加载时更新侧边栏
-        document.addEventListener('DOMContentLoaded', updateSidebar);
+        document.addEventListener('DOMContentLoaded', window.updateSidebar);
     </script>
 </body>
 </html>

@@ -47,28 +47,51 @@ class CompleteCMS {
     createAvatarTrigger() {
         // 等待DOM加载完成
         const setupTrigger = () => {
-            const avatar = document.querySelector('.sidebar-avatar, .sidebar-avatar img');
+            // 尝试多个选择器
+            let avatar = document.querySelector('#sidebar-avatar-img');
             if (!avatar) {
-                setTimeout(setupTrigger, 100);
+                avatar = document.querySelector('.sidebar-avatar img');
+            }
+            if (!avatar) {
+                avatar = document.querySelector('.sidebar-avatar');
+            }
+
+            if (!avatar) {
+                console.log('⚠️ 未找到头像元素，1秒后重试...');
+                setTimeout(setupTrigger, 1000);
                 return;
             }
 
+            console.log('✅ 找到头像元素，设置点击监听器');
             avatar.style.cursor = 'pointer';
-            avatar.addEventListener('click', (e) => {
+
+            const clickHandler = (e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 this.clickCount++;
+                console.log(`点击头像 ${this.clickCount} 次`);
 
                 if (this.clickTimer) clearTimeout(this.clickTimer);
 
                 if (this.clickCount >= 3) {
+                    console.log('触发编辑模式切换');
                     this.clickCount = 0;
                     this.isEditMode ? this.exitEditMode() : this.showLoginPrompt();
                 } else {
                     this.clickTimer = setTimeout(() => {
+                        console.log('重置点击计数');
                         this.clickCount = 0;
                     }, 1000);
                 }
-            });
+            };
+
+            avatar.addEventListener('click', clickHandler);
+
+            // 如果是img元素，也给父元素添加监听器
+            if (avatar.tagName === 'IMG' && avatar.parentElement) {
+                avatar.parentElement.style.cursor = 'pointer';
+                avatar.parentElement.addEventListener('click', clickHandler);
+            }
         };
 
         if (document.readyState === 'loading') {
@@ -97,12 +120,22 @@ class CompleteCMS {
     }
 
     enterEditMode() {
+        console.log('🚀 进入编辑模式...');
         this.isEditMode = true;
         document.body.classList.add('cms-edit-mode');
+        console.log('📝 添加body类: cms-edit-mode');
+
         this.createToolbar();
+        console.log('🔧 创建工具栏');
+
         this.addEditStyles();
+        console.log('🎨 添加编辑样式');
+
         this.makeAllEditable();
+        console.log('✏️ 使所有内容可编辑');
+
         this.showNotification('✅ 已进入编辑模式! 点击任何内容编辑，点击头像3次退出', 'success');
+        console.log('✅ 编辑模式已激活');
     }
 
     exitEditMode() {
@@ -117,10 +150,12 @@ class CompleteCMS {
         if (toolbar) toolbar.remove();
 
         // 移除所有添加按钮和编辑控件
-        document.querySelectorAll('.cms-add-module-btn, .cms-edit-overlay, .cms-sidebar-edit').forEach(el => el.remove());
+        document.querySelectorAll('.cms-add-module-btn, .cms-edit-overlay, .cms-sidebar-edit, .cms-controls').forEach(el => el.remove());
 
         // 重新渲染
-        router.handleRoute();
+        if (window.router) {
+            window.router.handleRoute();
+        }
         this.showNotification('已退出编辑模式', 'info');
     }
 
@@ -489,20 +524,32 @@ class CompleteCMS {
     }
 
     attachEditHandlers() {
-        if (!this.isEditMode) return;
+        if (!this.isEditMode) {
+            console.log('⚠️ 不在编辑模式，跳过附加编辑处理器');
+            return;
+        }
 
         const container = document.getElementById('page-container');
-        if (!container) return;
+        if (!container) {
+            console.log('⚠️ 未找到page-container');
+            return;
+        }
+
+        console.log('📌 开始附加编辑处理器...');
 
         // 移除旧的处理器
         container.querySelectorAll('.cms-edit-overlay, .cms-controls').forEach(el => el.remove());
 
         // 为所有 section 添加可编辑标记
-        container.querySelectorAll('.content-card, .editable-section').forEach((section, index) => {
+        const sections = container.querySelectorAll('.content-card, .editable-section');
+        console.log(`找到 ${sections.length} 个section`);
+
+        sections.forEach((section, index) => {
             if (section.classList.contains('cms-editable')) return;
 
             section.classList.add('cms-editable');
             section.dataset.sectionIndex = index;
+            section.style.position = 'relative'; // 确保定位正确
 
             // 添加编辑覆盖层
             const overlay = document.createElement('div');
@@ -513,18 +560,22 @@ class CompleteCMS {
             const controls = document.createElement('div');
             controls.className = 'cms-controls';
             controls.innerHTML = `
-                <button class="cms-btn-small cms-btn-edit" onclick="completeCMS.editSection(${index})">编辑</button>
-                <button class="cms-btn-small cms-btn-delete" onclick="completeCMS.deleteSection(${index})">删除</button>
+                <button class="cms-btn-small cms-btn-edit" onclick="window.completeCMS.editSection(${index})">编辑</button>
+                <button class="cms-btn-small cms-btn-delete" onclick="window.completeCMS.deleteSection(${index})">删除</button>
             `;
             section.appendChild(controls);
         });
 
         // 为所有列表项添加可编辑标记
-        container.querySelectorAll('.achievement-item, .research-item, .student-card').forEach((item, index) => {
+        const items = container.querySelectorAll('.achievement-item, .research-item, .student-card');
+        console.log(`找到 ${items.length} 个可编辑项`);
+
+        items.forEach((item, index) => {
             if (item.classList.contains('cms-editable')) return;
 
             item.classList.add('cms-editable');
             item.dataset.itemIndex = index;
+            item.style.position = 'relative'; // 确保定位正确
 
             const overlay = document.createElement('div');
             overlay.className = 'cms-edit-overlay';
@@ -537,11 +588,13 @@ class CompleteCMS {
             const dataIndex = item.dataset.index;
 
             controls.innerHTML = `
-                <button class="cms-btn-small cms-btn-edit" onclick="completeCMS.editItem('${type}', ${dataIndex})">编辑</button>
-                <button class="cms-btn-small cms-btn-delete" onclick="completeCMS.deleteItem('${type}', ${dataIndex})">删除</button>
+                <button class="cms-btn-small cms-btn-edit" onclick="window.completeCMS.editItem('${type}', ${dataIndex})">编辑</button>
+                <button class="cms-btn-small cms-btn-delete" onclick="window.completeCMS.deleteItem('${type}', ${dataIndex})">删除</button>
             `;
             item.appendChild(controls);
         });
+
+        console.log(`✅ 编辑处理器已附加到 ${sections.length} 个sections和 ${items.length} 个items`);
 
         // 在每个section后添加"添加模块"按钮
         this.addModuleButtons();
@@ -1815,8 +1868,12 @@ class CompleteCMS {
     }
 
     refreshCurrentPage() {
-        router.handleRoute();
-        updateSidebar();
+        if (window.router) {
+            window.router.handleRoute();
+        }
+        if (window.updateSidebar) {
+            window.updateSidebar();
+        }
         // 重新附加编辑处理器
         setTimeout(() => this.attachEditHandlers(), 100);
     }
@@ -1872,9 +1929,23 @@ class CompleteCMS {
 }
 
 // 初始化CMS
-let completeCMS;
-window.addEventListener('DOMContentLoaded', () => {
-    completeCMS = new CompleteCMS();
+window.completeCMS = null;
+
+function initCompleteCMS() {
+    if (window.completeCMS) return; // 防止重复初始化
+
+    window.completeCMS = new CompleteCMS();
     console.log('✅ 完整CMS系统已加载');
     console.log('💡 连续点击头像3次进入编辑模式');
-});
+}
+
+// 尝试多种初始化时机
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCompleteCMS);
+} else {
+    // DOM已经就绪，直接初始化
+    setTimeout(initCompleteCMS, 100);
+}
+
+// 也在window.load时再次检查
+window.addEventListener('load', initCompleteCMS);
