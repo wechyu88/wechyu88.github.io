@@ -11,66 +11,149 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-avatar">
-                <img src="../images/Avatar.jpg" alt="Chengyuan Wen">
+                <img src="../images/Avatar.jpg" alt="温程远">
             </div>
-            <h2>温成远</h2>
-            <p>Chengyuan Wen</p>
+            <h2 id="nav-name">温程远</h2>
+            <p id="nav-title">副教授</p>
+            <p id="nav-affiliation">浙江海洋大学</p>
         </div>
 
         <nav>
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="../index-new.html" class="nav-link">
-                        <i>🏠</i> 首页
-                    </a>
-                </li>
-
+                <!-- 研究方向 -->
                 <li class="nav-item has-submenu">
                     <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
                         <i>🔬</i> 研究方向
                     </a>
                     <ul class="sub-menu">
                         <li class="nav-item">
-                            <a href="research/ai-robotics.html" class="nav-link">人工智能与机器人</a>
+                            <a href="../pages/research/ai-robotics.html" class="nav-link">人工智能与机器人</a>
                         </li>
                         <li class="nav-item">
-                            <a href="research/computer-vision.html" class="nav-link">计算机视觉</a>
+                            <a href="../pages/research/computer-vision.html" class="nav-link">计算机视觉</a>
                         </li>
                         <li class="nav-item">
-                            <a href="research/machine-learning.html" class="nav-link">机器学习</a>
+                            <a href="../pages/research/machine-learning.html" class="nav-link">机器学习</a>
                         </li>
                         <li class="nav-item">
-                            <a href="research/data-mining.html" class="nav-link">数据挖掘</a>
+                            <a href="../pages/research/data-mining.html" class="nav-link">数据挖掘</a>
                         </li>
                     </ul>
                 </li>
 
+                <!-- 研究成果 -->
                 <li class="nav-item has-submenu">
                     <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
                         <i>📚</i> 研究成果
                     </a>
                     <ul class="sub-menu">
                         <li class="nav-item">
-                            <a href="achievements/all.html" class="nav-link">总成果</a>
+                            <a href="../pages/achievements/all.html" class="nav-link">总成果</a>
                         </li>
                         <li class="nav-item">
-                            <a href="achievements/phd.html" class="nav-link">博士期间</a>
+                            <a href="../pages/achievements/education.html" class="nav-link">博士硕士期间</a>
                         </li>
                         <li class="nav-item">
-                            <a href="achievements/master.html" class="nav-link">硕士期间</a>
+                            <a href="../pages/achievements/work.html" class="nav-link">工作期间</a>
                         </li>
                     </ul>
                 </li>
 
+                <!-- 教学工作 -->
+                <li class="nav-item has-submenu">
+                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                        <i>📖</i> 教学工作
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="../pages/teaching/courses.html" class="nav-link">授课课程</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../pages/teaching/textbooks.html" class="nav-link">编写教材</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../pages/teaching/awards.html" class="nav-link">教学获奖</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- 学生指导 -->
+                <li class="nav-item has-submenu">
+                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                        <i>👨‍🎓</i> 学生指导
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="../pages/students/current.html" class="nav-link">在读学生</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../pages/students/graduated.html" class="nav-link">已毕业学生</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- 竞赛指导 -->
                 <li class="nav-item">
-                    <a href="competitions.html" class="nav-link active">
-                        <i>🏆</i> 大学生竞赛
+                    <a href="../pages/competitions.html" class="nav-link active">
+                        <i>🏆</i> 竞赛指导
                     </a>
                 </li>
 
+                <!-- 学术服务 -->
+                <li class="nav-item has-submenu">
+                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                        <i>🤝</i> 学术服务
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="../pages/service/review.html" class="nav-link">审稿服务</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../pages/service/committee.html" class="nav-link">学术委员会</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- 学术活动 -->
+                <li class="nav-item has-submenu">
+                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                        <i>🎤</i> 学术活动
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="../pages/activities/talks.html" class="nav-link">学术报告</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../pages/activities/visits.html" class="nav-link">访问交流</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- 荣誉奖项 -->
                 <li class="nav-item">
-                    <a href="../about/index.html" class="nav-link">
-                        <i>👤</i> 关于我
+                    <a href="../pages/honors.html" class="nav-link">
+                        <i>🌟</i> 荣誉奖项
+                    </a>
+                </li>
+
+                <!-- 新闻动态 -->
+                <li class="nav-item">
+                    <a href="../pages/news.html" class="nav-link">
+                        <i>📰</i> 新闻动态
+                    </a>
+                </li>
+
+                <!-- 资源下载 -->
+                <li class="nav-item">
+                    <a href="../pages/resources.html" class="nav-link">
+                        <i>📦</i> 资源下载
+                    </a>
+                </li>
+
+                <!-- 联系方式 -->
+                <li class="nav-item">
+                    <a href="../pages/contact.html" class="nav-link">
+                        <i>📧</i> 联系方式
                     </a>
                 </li>
             </ul>

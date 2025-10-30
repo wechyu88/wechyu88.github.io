@@ -1065,20 +1065,1032 @@ ${this.markdownToHTML(md)}
         URL.revokeObjectURL(url);
     }
 
-    // 占位函数
-    addResearch() { alert('添加研究方向功能待实现'); }
-    editResearch(index) { alert('编辑研究方向功能待实现'); }
+    // ========== 文件上传功能 ==========
+
+    // 上传文件到GitHub
+    async uploadFileToGitHub(file, targetPath) {
+        if (!this.config.github.username || !this.config.github.repo || !this.config.github.token) {
+            alert('❌ 请先在设置中配置GitHub信息');
+            return null;
+        }
+
+        try {
+            // 读取文件内容
+            const fileContent = await this.readFileAsBase64(file);
+
+            // 构建GitHub API URL
+            const url = `https://api.github.com/repos/${this.config.github.username}/${this.config.github.repo}/contents/${targetPath}`;
+
+            // 检查文件是否已存在
+            let sha = null;
+            try {
+                const getResponse = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${this.config.github.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    sha = data.sha;
+                }
+            } catch (e) {
+                // 文件不存在，继续
+            }
+
+            // 上传文件
+            const uploadResponse = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${this.config.github.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Upload ${file.name} via CMS - ${new Date().toLocaleString()}`,
+                    content: fileContent,
+                    sha: sha
+                })
+            });
+
+            if (uploadResponse.ok) {
+                const result = await uploadResponse.json();
+                return result.content.download_url;
+            } else {
+                throw new Error('上传失败');
+            }
+        } catch (error) {
+            alert(`❌ 文件上传失败: ${error.message}`);
+            return null;
+        }
+    }
+
+    // 读取文件为Base64
+    readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ========== 研究方向管理 ==========
+
+    addResearch() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加研究方向</h3>
+            <div class="cms-form-group">
+                <label>方向ID（英文，用于URL）</label>
+                <input type="text" id="research-id" placeholder="例如: deep-learning" />
+            </div>
+            <div class="cms-form-group">
+                <label>中文标题</label>
+                <input type="text" id="research-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>英文标题</label>
+                <input type="text" id="research-title-en" />
+            </div>
+            <div class="cms-form-group">
+                <label>图标（Emoji）</label>
+                <input type="text" id="research-icon" value="🔬" />
+            </div>
+            <div class="cms-form-group">
+                <label>简短描述</label>
+                <textarea id="research-description"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>详细内容</label>
+                <textarea id="research-content" style="min-height: 200px;"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveNewResearch()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('research')">取消</button>
+            </div>
+        `;
+    }
+
+    saveNewResearch() {
+        const newResearch = {
+            id: document.getElementById('research-id').value,
+            title: document.getElementById('research-title').value,
+            titleEn: document.getElementById('research-title-en').value,
+            icon: document.getElementById('research-icon').value,
+            description: document.getElementById('research-description').value,
+            image: 'assets/images/research/placeholder.jpg',
+            content: document.getElementById('research-content').value,
+            topics: [],
+            students: []
+        };
+
+        if (!newResearch.id || !newResearch.title) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        this.data.research.push(newResearch);
+        alert('✅ 研究方向添加成功！');
+        this.showTab('research');
+    }
+
+    editResearch(index) {
+        const r = this.data.research[index];
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>编辑研究方向</h3>
+            <div class="cms-form-group">
+                <label>方向ID（英文，用于URL）</label>
+                <input type="text" id="research-id" value="${r.id}" />
+            </div>
+            <div class="cms-form-group">
+                <label>中文标题</label>
+                <input type="text" id="research-title" value="${r.title}" />
+            </div>
+            <div class="cms-form-group">
+                <label>英文标题</label>
+                <input type="text" id="research-title-en" value="${r.titleEn}" />
+            </div>
+            <div class="cms-form-group">
+                <label>图标（Emoji）</label>
+                <input type="text" id="research-icon" value="${r.icon}" />
+            </div>
+            <div class="cms-form-group">
+                <label>简短描述</label>
+                <textarea id="research-description">${r.description}</textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>详细内容</label>
+                <textarea id="research-content" style="min-height: 200px;">${r.content}</textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveEditedResearch(${index})">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('research')">取消</button>
+            </div>
+        `;
+    }
+
+    saveEditedResearch(index) {
+        this.data.research[index] = {
+            ...this.data.research[index],
+            id: document.getElementById('research-id').value,
+            title: document.getElementById('research-title').value,
+            titleEn: document.getElementById('research-title-en').value,
+            icon: document.getElementById('research-icon').value,
+            description: document.getElementById('research-description').value,
+            content: document.getElementById('research-content').value
+        };
+
+        alert('✅ 研究方向更新成功！');
+        this.showTab('research');
+    }
+
     deleteResearch(index) {
         if (confirm('确定要删除这个研究方向吗？')) {
             this.data.research.splice(index, 1);
             this.showTab('research');
         }
     }
-    addAchievement(type) { alert(`添加${type}功能待实现`); }
-    addTeaching(type) { alert(`添加${type}功能待实现`); }
-    addStudent(status, level) { alert(`添加学生功能待实现`); }
-    addCompetition() { alert('添加竞赛功能待实现'); }
-    editCompetition(index) { alert('编辑竞赛功能待实现'); }
+
+    // ========== 成果管理 ==========
+
+    addAchievement(type) {
+        if (type === 'journal') {
+            this.addJournal();
+        } else if (type === 'conference') {
+            this.addConference();
+        } else if (type === 'patent') {
+            this.addPatent();
+        } else if (type === 'project') {
+            this.addProject();
+        } else if (type === 'award') {
+            this.addAward();
+        }
+    }
+
+    addJournal() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加期刊论文</h3>
+            <div class="cms-form-group">
+                <label>论文标题 *</label>
+                <input type="text" id="journal-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>作者 *</label>
+                <input type="text" id="journal-authors" placeholder="例如: Zhang San, Li Si, et al." />
+            </div>
+            <div class="cms-form-group">
+                <label>期刊名称 *</label>
+                <input type="text" id="journal-venue" placeholder="例如: IEEE Transactions on Pattern Analysis and Machine Intelligence" />
+            </div>
+            <div class="cms-form-group">
+                <label>发表年份 *</label>
+                <input type="number" id="journal-year" value="${new Date().getFullYear()}" />
+            </div>
+            <div class="cms-form-group">
+                <label>发表日期</label>
+                <input type="text" id="journal-date" placeholder="例如: 2024-06" />
+            </div>
+            <div class="cms-form-group">
+                <label>期刊等级</label>
+                <select id="journal-level">
+                    <option value="SCI一区">SCI一区</option>
+                    <option value="SCI二区">SCI二区</option>
+                    <option value="SCI三区">SCI三区</option>
+                    <option value="SCI四区">SCI四区</option>
+                    <option value="EI">EI</option>
+                    <option value="核心期刊">核心期刊</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>摘要</label>
+                <textarea id="journal-abstract"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>DOI</label>
+                <input type="text" id="journal-doi" placeholder="例如: 10.1109/TPAMI.2024.xxxxx" />
+            </div>
+            <div class="cms-form-group">
+                <label>PDF文件（上传到GitHub）</label>
+                <input type="file" id="journal-pdf" accept=".pdf" />
+                <small>选择PDF文件后，保存时会自动上传到GitHub</small>
+            </div>
+            <div class="cms-form-group">
+                <label>时期</label>
+                <select id="journal-period">
+                    <option value="work">工作期间</option>
+                    <option value="phd">博士期间</option>
+                    <option value="master">硕士期间</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveJournal()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('achievements')">取消</button>
+            </div>
+        `;
+    }
+
+    async saveJournal() {
+        const title = document.getElementById('journal-title').value;
+        const authors = document.getElementById('journal-authors').value;
+        const venue = document.getElementById('journal-venue').value;
+        const year = parseInt(document.getElementById('journal-year').value);
+
+        if (!title || !authors || !venue || !year) {
+            alert('❌ 请填写必填字段（标记*的字段）');
+            return;
+        }
+
+        // 处理PDF上传
+        let pdfUrl = '';
+        const pdfFile = document.getElementById('journal-pdf').files[0];
+        if (pdfFile) {
+            if (!confirm('确定要上传PDF到GitHub吗？这可能需要一些时间。')) {
+                return;
+            }
+            const fileName = `paper_${Date.now()}_${pdfFile.name}`;
+            pdfUrl = await this.uploadFileToGitHub(pdfFile, `assets/papers/${fileName}`);
+            if (!pdfUrl) {
+                alert('⚠️ PDF上传失败，但论文信息会被保存。你可以稍后手动上传PDF。');
+            }
+        }
+
+        const newJournal = {
+            title: title,
+            authors: authors,
+            venue: venue,
+            year: year,
+            date: document.getElementById('journal-date').value,
+            level: document.getElementById('journal-level').value,
+            abstract: document.getElementById('journal-abstract').value,
+            tags: [],
+            period: document.getElementById('journal-period').value,
+            doi: document.getElementById('journal-doi').value,
+            pdf: pdfUrl
+        };
+
+        this.data.achievements.journals.push(newJournal);
+        alert('✅ 期刊论文添加成功！');
+        this.showTab('achievements');
+    }
+
+    addConference() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加会议论文</h3>
+            <div class="cms-form-group">
+                <label>论文标题 *</label>
+                <input type="text" id="conf-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>作者 *</label>
+                <input type="text" id="conf-authors" />
+            </div>
+            <div class="cms-form-group">
+                <label>会议名称 *</label>
+                <input type="text" id="conf-venue" placeholder="例如: CVPR 2024" />
+            </div>
+            <div class="cms-form-group">
+                <label>年份 *</label>
+                <input type="number" id="conf-year" value="${new Date().getFullYear()}" />
+            </div>
+            <div class="cms-form-group">
+                <label>日期</label>
+                <input type="text" id="conf-date" placeholder="例如: 2024-06" />
+            </div>
+            <div class="cms-form-group">
+                <label>会议等级</label>
+                <select id="conf-level">
+                    <option value="CCF A类">CCF A类</option>
+                    <option value="CCF B类">CCF B类</option>
+                    <option value="CCF C类">CCF C类</option>
+                    <option value="EI会议">EI会议</option>
+                    <option value="国际会议">国际会议</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>摘要</label>
+                <textarea id="conf-abstract"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>PDF文件</label>
+                <input type="file" id="conf-pdf" accept=".pdf" />
+            </div>
+            <div class="cms-form-group">
+                <label>时期</label>
+                <select id="conf-period">
+                    <option value="work">工作期间</option>
+                    <option value="phd">博士期间</option>
+                    <option value="master">硕士期间</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveConference()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('achievements')">取消</button>
+            </div>
+        `;
+    }
+
+    async saveConference() {
+        const title = document.getElementById('conf-title').value;
+        const authors = document.getElementById('conf-authors').value;
+        const venue = document.getElementById('conf-venue').value;
+        const year = parseInt(document.getElementById('conf-year').value);
+
+        if (!title || !authors || !venue || !year) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        // 处理PDF上传
+        let pdfUrl = '';
+        const pdfFile = document.getElementById('conf-pdf').files[0];
+        if (pdfFile) {
+            if (!confirm('确定要上传PDF到GitHub吗？')) {
+                return;
+            }
+            const fileName = `paper_${Date.now()}_${pdfFile.name}`;
+            pdfUrl = await this.uploadFileToGitHub(pdfFile, `assets/papers/${fileName}`);
+        }
+
+        const newConference = {
+            title: title,
+            authors: authors,
+            venue: venue,
+            year: year,
+            date: document.getElementById('conf-date').value,
+            level: document.getElementById('conf-level').value,
+            abstract: document.getElementById('conf-abstract').value,
+            tags: [],
+            period: document.getElementById('conf-period').value,
+            pdf: pdfUrl || ''
+        };
+
+        this.data.achievements.conferences.push(newConference);
+        alert('✅ 会议论文添加成功！');
+        this.showTab('achievements');
+    }
+
+    addPatent() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加专利</h3>
+            <div class="cms-form-group">
+                <label>专利名称 *</label>
+                <input type="text" id="patent-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>发明人 *</label>
+                <input type="text" id="patent-inventors" placeholder="例如: 张三, 李四" />
+            </div>
+            <div class="cms-form-group">
+                <label>专利号 *</label>
+                <input type="text" id="patent-number" placeholder="例如: CN202410001234" />
+            </div>
+            <div class="cms-form-group">
+                <label>申请/授权日期 *</label>
+                <input type="text" id="patent-date" placeholder="例如: 2024-05" />
+            </div>
+            <div class="cms-form-group">
+                <label>状态</label>
+                <select id="patent-status">
+                    <option value="已授权">已授权</option>
+                    <option value="实审">实审</option>
+                    <option value="公开">公开</option>
+                    <option value="申请中">申请中</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>专利证书（图片或PDF）</label>
+                <input type="file" id="patent-certificate" accept="image/*,.pdf" />
+                <small>上传专利证书图片或PDF文件</small>
+            </div>
+            <div class="cms-form-group">
+                <label>时期</label>
+                <select id="patent-period">
+                    <option value="work">工作期间</option>
+                    <option value="phd">博士期间</option>
+                    <option value="master">硕士期间</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.savePatent()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('achievements')">取消</button>
+            </div>
+        `;
+    }
+
+    async savePatent() {
+        const title = document.getElementById('patent-title').value;
+        const inventors = document.getElementById('patent-inventors').value;
+        const number = document.getElementById('patent-number').value;
+        const date = document.getElementById('patent-date').value;
+
+        if (!title || !inventors || !number || !date) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        // 处理证书上传
+        let certificateUrl = '';
+        const certFile = document.getElementById('patent-certificate').files[0];
+        if (certFile) {
+            if (!confirm('确定要上传专利证书到GitHub吗？')) {
+                return;
+            }
+            const fileName = `patent_cert_${Date.now()}_${certFile.name}`;
+            certificateUrl = await this.uploadFileToGitHub(certFile, `assets/patents/${fileName}`);
+        }
+
+        const newPatent = {
+            title: title,
+            inventors: inventors,
+            number: number,
+            date: date,
+            status: document.getElementById('patent-status').value,
+            period: document.getElementById('patent-period').value,
+            certificate: certificateUrl || ''
+        };
+
+        this.data.achievements.patents.push(newPatent);
+        alert('✅ 专利添加成功！');
+        this.showTab('achievements');
+    }
+
+    addProject() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加科研项目</h3>
+            <div class="cms-form-group">
+                <label>项目名称 *</label>
+                <input type="text" id="project-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目编号</label>
+                <input type="text" id="project-number" />
+            </div>
+            <div class="cms-form-group">
+                <label>承担角色 *</label>
+                <select id="project-role">
+                    <option value="项目负责人">项目负责人</option>
+                    <option value="项目参与人">项目参与人</option>
+                    <option value="子课题负责人">子课题负责人</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>项目经费</label>
+                <input type="text" id="project-budget" placeholder="例如: 60万" />
+            </div>
+            <div class="cms-form-group">
+                <label>开始日期 *</label>
+                <input type="text" id="project-start" placeholder="例如: 2023-01" />
+            </div>
+            <div class="cms-form-group">
+                <label>结束日期</label>
+                <input type="text" id="project-end" placeholder="例如: 2026-12" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目简介</label>
+                <textarea id="project-description"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>时期</label>
+                <select id="project-period">
+                    <option value="work">工作期间</option>
+                    <option value="phd">博士期间</option>
+                    <option value="master">硕士期间</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveProject()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('achievements')">取消</button>
+            </div>
+        `;
+    }
+
+    saveProject() {
+        const title = document.getElementById('project-title').value;
+        const role = document.getElementById('project-role').value;
+        const startDate = document.getElementById('project-start').value;
+
+        if (!title || !role || !startDate) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        const newProject = {
+            title: title,
+            number: document.getElementById('project-number').value,
+            role: role,
+            budget: document.getElementById('project-budget').value,
+            startDate: startDate,
+            endDate: document.getElementById('project-end').value,
+            description: document.getElementById('project-description').value,
+            period: document.getElementById('project-period').value
+        };
+
+        this.data.achievements.projects.push(newProject);
+        alert('✅ 科研项目添加成功！');
+        this.showTab('achievements');
+    }
+
+    addAward() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加获奖</h3>
+            <div class="cms-form-group">
+                <label>奖项名称 *</label>
+                <input type="text" id="award-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>颁奖单位 *</label>
+                <input type="text" id="award-org" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖日期 *</label>
+                <input type="text" id="award-date" placeholder="例如: 2024-08" />
+            </div>
+            <div class="cms-form-group">
+                <label>奖项等级</label>
+                <select id="award-level">
+                    <option value="国际级">国际级</option>
+                    <option value="国家级">国家级</option>
+                    <option value="省级">省级</option>
+                    <option value="市级">市级</option>
+                    <option value="校级">校级</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>获奖说明</label>
+                <textarea id="award-description"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>时期</label>
+                <select id="award-period">
+                    <option value="work">工作期间</option>
+                    <option value="phd">博士期间</option>
+                    <option value="master">硕士期间</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveAward()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('achievements')">取消</button>
+            </div>
+        `;
+    }
+
+    saveAward() {
+        const title = document.getElementById('award-title').value;
+        const organization = document.getElementById('award-org').value;
+        const date = document.getElementById('award-date').value;
+
+        if (!title || !organization || !date) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        const newAward = {
+            title: title,
+            organization: organization,
+            date: date,
+            level: document.getElementById('award-level').value,
+            description: document.getElementById('award-description').value,
+            period: document.getElementById('award-period').value
+        };
+
+        this.data.achievements.awards.push(newAward);
+        alert('✅ 获奖记录添加成功！');
+        this.showTab('achievements');
+    }
+
+    // ========== 学生管理 ==========
+
+    addStudent(status, level) {
+        const statusText = status === 'current' ? '在读' : '已毕业';
+        const levelText = level === 'phd' ? '博士生' : level === 'master' ? '硕士生' : '本科生';
+
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加${statusText}${levelText}</h3>
+            <div class="cms-form-group">
+                <label>学生姓名 *</label>
+                <input type="text" id="student-name" />
+            </div>
+            <div class="cms-form-group">
+                <label>研究方向</label>
+                <input type="text" id="student-direction" />
+            </div>
+            <div class="cms-form-group">
+                <label>入学年份 *</label>
+                <input type="text" id="student-year" placeholder="例如: 2022" />
+            </div>
+            ${status === 'graduated' ? `
+            <div class="cms-form-group">
+                <label>毕业去向</label>
+                <input type="text" id="student-destination" placeholder="例如: 腾讯 AI Lab" />
+            </div>
+            ` : ''}
+            <div class="cms-form-group">
+                <label>个人简介</label>
+                <textarea id="student-intro"></textarea>
+            </div>
+            <div class="cms-form-group">
+                <label>照片URL（可选）</label>
+                <input type="text" id="student-image" value="assets/images/students/placeholder.jpg" />
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveStudent('${status}', '${level}')">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('students')">取消</button>
+            </div>
+        `;
+    }
+
+    saveStudent(status, level) {
+        const name = document.getElementById('student-name').value;
+        const year = document.getElementById('student-year').value;
+
+        if (!name || !year) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        const levelText = level === 'phd' ? '博士生' : level === 'master' ? '硕士生' : '本科生';
+
+        const newStudent = {
+            name: name,
+            level: levelText,
+            direction: document.getElementById('student-direction').value,
+            year: year,
+            image: document.getElementById('student-image').value,
+            intro: document.getElementById('student-intro').value
+        };
+
+        if (status === 'graduated') {
+            newStudent.destination = document.getElementById('student-destination')?.value || '';
+        }
+
+        if (!this.data.students[status][level]) {
+            this.data.students[status][level] = [];
+        }
+
+        this.data.students[status][level].push(newStudent);
+        alert('✅ 学生信息添加成功！');
+        this.showTab('students');
+    }
+
+    // ========== 教学管理 ==========
+
+    addTeaching(type) {
+        if (type === 'course') {
+            this.addCourse();
+        } else if (type === 'textbook') {
+            this.addTextbook();
+        } else if (type === 'award') {
+            this.addTeachingAward();
+        }
+    }
+
+    addCourse() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加授课课程</h3>
+            <div class="cms-form-group">
+                <label>课程名称 *</label>
+                <input type="text" id="course-name" />
+            </div>
+            <div class="cms-form-group">
+                <label>课程代码</label>
+                <input type="text" id="course-code" />
+            </div>
+            <div class="cms-form-group">
+                <label>学分</label>
+                <input type="number" id="course-credit" />
+            </div>
+            <div class="cms-form-group">
+                <label>学时</label>
+                <input type="number" id="course-hours" />
+            </div>
+            <div class="cms-form-group">
+                <label>学期</label>
+                <input type="text" id="course-semester" placeholder="例如: 2024秋季" />
+            </div>
+            <div class="cms-form-group">
+                <label>课程层次</label>
+                <select id="course-level">
+                    <option value="本科">本科</option>
+                    <option value="研究生">研究生</option>
+                    <option value="博士">博士</option>
+                </select>
+            </div>
+            <div class="cms-form-group">
+                <label>课程简介</label>
+                <textarea id="course-description"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveCourse()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('teaching')">取消</button>
+            </div>
+        `;
+    }
+
+    saveCourse() {
+        const name = document.getElementById('course-name').value;
+        if (!name) {
+            alert('❌ 请填写课程名称');
+            return;
+        }
+
+        const newCourse = {
+            name: name,
+            code: document.getElementById('course-code').value,
+            credit: parseInt(document.getElementById('course-credit').value) || 0,
+            hours: parseInt(document.getElementById('course-hours').value) || 0,
+            semester: document.getElementById('course-semester').value,
+            level: document.getElementById('course-level').value,
+            description: document.getElementById('course-description').value
+        };
+
+        this.data.teaching.courses.push(newCourse);
+        alert('✅ 课程添加成功！');
+        this.showTab('teaching');
+    }
+
+    addTextbook() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加编写教材</h3>
+            <div class="cms-form-group">
+                <label>教材名称 *</label>
+                <input type="text" id="textbook-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>作者 *</label>
+                <input type="text" id="textbook-authors" placeholder="例如: 张三 等" />
+            </div>
+            <div class="cms-form-group">
+                <label>出版社 *</label>
+                <input type="text" id="textbook-publisher" />
+            </div>
+            <div class="cms-form-group">
+                <label>出版日期</label>
+                <input type="text" id="textbook-date" placeholder="例如: 2023-08" />
+            </div>
+            <div class="cms-form-group">
+                <label>ISBN</label>
+                <input type="text" id="textbook-isbn" />
+            </div>
+            <div class="cms-form-group">
+                <label>封面图片URL</label>
+                <input type="text" id="textbook-cover" value="assets/images/achievements/placeholder.jpg" />
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveTextbook()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('teaching')">取消</button>
+            </div>
+        `;
+    }
+
+    saveTextbook() {
+        const title = document.getElementById('textbook-title').value;
+        const authors = document.getElementById('textbook-authors').value;
+        const publisher = document.getElementById('textbook-publisher').value;
+
+        if (!title || !authors || !publisher) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        const newTextbook = {
+            title: title,
+            authors: authors,
+            publisher: publisher,
+            date: document.getElementById('textbook-date').value,
+            isbn: document.getElementById('textbook-isbn').value,
+            cover: document.getElementById('textbook-cover').value
+        };
+
+        this.data.teaching.textbooks.push(newTextbook);
+        alert('✅ 教材添加成功！');
+        this.showTab('teaching');
+    }
+
+    addTeachingAward() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加教学获奖</h3>
+            <div class="cms-form-group">
+                <label>奖项名称 *</label>
+                <input type="text" id="teaching-award-title" />
+            </div>
+            <div class="cms-form-group">
+                <label>奖项等级</label>
+                <input type="text" id="teaching-award-level" placeholder="例如: 校级一等奖" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖日期</label>
+                <input type="text" id="teaching-award-date" placeholder="例如: 2024-09" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖说明</label>
+                <textarea id="teaching-award-description"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveTeachingAward()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('teaching')">取消</button>
+            </div>
+        `;
+    }
+
+    saveTeachingAward() {
+        const title = document.getElementById('teaching-award-title').value;
+        if (!title) {
+            alert('❌ 请填写奖项名称');
+            return;
+        }
+
+        const newAward = {
+            title: title,
+            level: document.getElementById('teaching-award-level').value,
+            date: document.getElementById('teaching-award-date').value,
+            description: document.getElementById('teaching-award-description').value
+        };
+
+        this.data.teaching.awards.push(newAward);
+        alert('✅ 教学获奖添加成功！');
+        this.showTab('teaching');
+    }
+
+    // ========== 竞赛管理 ==========
+
+    addCompetition() {
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>添加竞赛指导</h3>
+            <div class="cms-form-group">
+                <label>竞赛名称 *</label>
+                <input type="text" id="comp-name" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目名称 *</label>
+                <input type="text" id="comp-project" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖等级 *</label>
+                <input type="text" id="comp-award" placeholder="例如: 国家级金奖" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖日期 *</label>
+                <input type="text" id="comp-date" placeholder="例如: 2024-10" />
+            </div>
+            <div class="cms-form-group">
+                <label>参赛学生（用逗号分隔）*</label>
+                <input type="text" id="comp-students" placeholder="例如: 张三, 李四, 王五" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目描述</label>
+                <textarea id="comp-description"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveCompetition()">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('competitions')">取消</button>
+            </div>
+        `;
+    }
+
+    saveCompetition() {
+        const name = document.getElementById('comp-name').value;
+        const project = document.getElementById('comp-project').value;
+        const award = document.getElementById('comp-award').value;
+        const date = document.getElementById('comp-date').value;
+        const students = document.getElementById('comp-students').value;
+
+        if (!name || !project || !award || !date || !students) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        const newCompetition = {
+            name: name,
+            project: project,
+            award: award,
+            date: date,
+            students: students.split(',').map(s => s.trim()),
+            description: document.getElementById('comp-description').value,
+            images: []
+        };
+
+        this.data.competitions.push(newCompetition);
+        alert('✅ 竞赛记录添加成功！');
+        this.showTab('competitions');
+    }
+
+    editCompetition(index) {
+        const c = this.data.competitions[index];
+        const content = document.getElementById('cms-tab-content');
+        content.innerHTML = `
+            <h3>编辑竞赛指导</h3>
+            <div class="cms-form-group">
+                <label>竞赛名称 *</label>
+                <input type="text" id="comp-name" value="${c.name}" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目名称 *</label>
+                <input type="text" id="comp-project" value="${c.project}" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖等级 *</label>
+                <input type="text" id="comp-award" value="${c.award}" />
+            </div>
+            <div class="cms-form-group">
+                <label>获奖日期 *</label>
+                <input type="text" id="comp-date" value="${c.date}" />
+            </div>
+            <div class="cms-form-group">
+                <label>参赛学生（用逗号分隔）*</label>
+                <input type="text" id="comp-students" value="${c.students.join(', ')}" />
+            </div>
+            <div class="cms-form-group">
+                <label>项目描述</label>
+                <textarea id="comp-description">${c.description || ''}</textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="cms-btn cms-btn-primary" onclick="cms.saveEditedCompetition(${index})">保存</button>
+                <button class="cms-btn" onclick="cms.showTab('competitions')">取消</button>
+            </div>
+        `;
+    }
+
+    saveEditedCompetition(index) {
+        const name = document.getElementById('comp-name').value;
+        const project = document.getElementById('comp-project').value;
+        const award = document.getElementById('comp-award').value;
+        const date = document.getElementById('comp-date').value;
+        const students = document.getElementById('comp-students').value;
+
+        if (!name || !project || !award || !date || !students) {
+            alert('❌ 请填写必填字段');
+            return;
+        }
+
+        this.data.competitions[index] = {
+            ...this.data.competitions[index],
+            name: name,
+            project: project,
+            award: award,
+            date: date,
+            students: students.split(',').map(s => s.trim()),
+            description: document.getElementById('comp-description').value
+        };
+
+        alert('✅ 竞赛记录更新成功！');
+        this.showTab('competitions');
+    }
+
     deleteCompetition(index) {
         if (confirm('确定要删除这项竞赛记录吗？')) {
             this.data.competitions.splice(index, 1);
