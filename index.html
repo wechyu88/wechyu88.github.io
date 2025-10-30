@@ -120,6 +120,19 @@
                 <span class="stat-label">学生</span>
             </div>
         </div>
+
+        <!-- 隐藏工具按钮（连续点击统计区域3次显示） -->
+        <div class="hidden-tools" id="hidden-tools" style="display: none;">
+            <button class="tool-btn" onclick="downloadTimeline()" title="生成并下载学术时间线">
+                📅 生成时间线
+            </button>
+            <button class="tool-btn" onclick="downloadAcademicCV()" title="生成并下载学术简历">
+                📄 生成简历
+            </button>
+            <button class="tool-btn" onclick="toggleHiddenTools()" title="隐藏工具栏">
+                ❌ 隐藏
+            </button>
+        </div>
     </aside>
 
     <!-- ==================== 主内容区域（动态加载） ==================== -->
@@ -160,11 +173,32 @@
                 window.scrollTo(0, 0);
 
             } catch (error) {
+                // 检查是否是本地文件协议错误
+                const isLocalFile = window.location.protocol === 'file:';
+
                 container.innerHTML = `
                     <div class="error-message">
                         <h2>⚠️ 页面加载失败</h2>
                         <p>无法加载 ${pagePath}</p>
                         <p class="error-detail">${error.message}</p>
+                        ${isLocalFile ? `
+                            <div class="local-dev-notice">
+                                <h3>💡 本地开发提示</h3>
+                                <p>您正在使用本地文件协议(file://)，浏览器安全策略不允许加载其他文件。</p>
+                                <p><strong>解决方案：</strong></p>
+                                <ol style="text-align: left; display: inline-block; margin: 20px auto;">
+                                    <li>使用本地服务器运行：
+                                        <ul>
+                                            <li>Python 3: <code>python -m http.server 8000</code></li>
+                                            <li>Python 2: <code>python -m SimpleHTTPServer 8000</code></li>
+                                            <li>Node.js: <code>npx http-server</code></li>
+                                        </ul>
+                                    </li>
+                                    <li>然后访问: <code>http://localhost:8000</code></li>
+                                </ol>
+                                <p style="margin-top: 20px;">或者直接将网站部署到GitHub Pages查看效果。</p>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }
@@ -210,7 +244,44 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadPage('pages/home.html');
             updateStats(); // 更新统计数据
+            setupHiddenTools(); // 设置隐藏工具触发器
         });
+
+        // ==================== 隐藏工具控制 ====================
+        let toolClickCount = 0;
+        let toolClickTimer = null;
+
+        function setupHiddenTools() {
+            const statsDiv = document.querySelector('.sidebar-stats');
+            if (!statsDiv) return;
+
+            statsDiv.style.cursor = 'pointer';
+            statsDiv.addEventListener('click', () => {
+                toolClickCount++;
+
+                if (toolClickTimer) clearTimeout(toolClickTimer);
+
+                if (toolClickCount >= 3) {
+                    toolClickCount = 0;
+                    toggleHiddenTools();
+                } else {
+                    toolClickTimer = setTimeout(() => {
+                        toolClickCount = 0;
+                    }, 1000);
+                }
+            });
+        }
+
+        function toggleHiddenTools() {
+            const toolsDiv = document.getElementById('hidden-tools');
+            if (toolsDiv.style.display === 'none') {
+                toolsDiv.style.display = 'block';
+                console.log('🔓 隐藏工具已激活');
+            } else {
+                toolsDiv.style.display = 'none';
+                console.log('🔒 隐藏工具已隐藏');
+            }
+        }
     </script>
 
     <style>
@@ -271,6 +342,86 @@
         .nav-link.active {
             background: rgba(255,255,255,0.1);
             border-left: 3px solid var(--secondary-color);
+        }
+
+        /* 隐藏工具样式 */
+        .hidden-tools {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .tool-btn:active {
+            transform: translateX(5px) scale(0.98);
+        }
+
+        /* 本地开发提示样式 */
+        .local-dev-notice {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #856404;
+        }
+
+        .local-dev-notice h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .local-dev-notice code {
+            background: #fff;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+
+        .local-dev-notice ol,
+        .local-dev-notice ul {
+            margin: 10px 0;
+        }
+
+        .local-dev-notice li {
+            margin: 8px 0;
         }
     </style>
 </body>

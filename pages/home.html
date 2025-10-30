@@ -118,6 +118,25 @@
     document.getElementById('stat-patents-home').textContent = globalData.patents.length;
     document.getElementById('stat-students-home').textContent = globalData.students.length;
     document.getElementById('stat-competitions-home').textContent = globalData.competitions.length;
+
+    // ==================== 添加时间线事件（示例） ====================
+    // 在需要加入时间线的页面模块中调用 markTimelineEvent()
+    // 参数：日期, 标题, 类别, 关联ID（可选）, 描述（可选）
+
+    // 论文发表事件
+    markTimelineEvent('2024-01', '论文被IEEE TPAMI接收', 'paper', 'paper-001', '基于深度学习的图像识别方法研究');
+
+    // 学生指导事件
+    markTimelineEvent('2023-12', '指导学生获得全国大学生智能车竞赛一等奖', 'competition', 'competition-001');
+
+    // 荣誉奖项事件
+    markTimelineEvent('2023-10', '获得浙江省科学技术进步奖', 'honor', 'honor-001');
+
+    // 专利授权事件
+    markTimelineEvent('2023-06-15', '专利"一种智能图像识别装置及方法"获得授权', 'patent', 'patent-001');
+
+    // 其他重要事件
+    markTimelineEvent('2023-01', '开始访问某某大学进行学术交流', 'other', null, '为期一年的访问学者计划');
 </script>
 
 <style>
