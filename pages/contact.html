@@ -1,0 +1,163 @@
+<!-- 联系方式页面 -->
+<header class="page-header">
+    <h1>📧 联系方式</h1>
+    <p>Contact Information</p>
+</header>
+
+<section class="content-card">
+    <h2>联系信息</h2>
+
+    <div class="contact-grid">
+        <div class="contact-item">
+            <div class="contact-icon">📧</div>
+            <div class="contact-info">
+                <h4>电子邮箱</h4>
+                <p><a href="mailto:wenchengyuan@zjou.edu.cn">wenchengyuan@zjou.edu.cn</a></p>
+            </div>
+        </div>
+
+        <div class="contact-item">
+            <div class="contact-icon">🏢</div>
+            <div class="contact-info">
+                <h4>办公地址</h4>
+                <p>浙江省舟山市定海区临城街道海大南路1号<br>浙江海洋大学信息工程学院</p>
+            </div>
+        </div>
+
+        <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div class="contact-info">
+                <h4>办公电话</h4>
+                <p>+86-580-xxxxxxx</p>
+            </div>
+        </div>
+
+        <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <div class="contact-info">
+                <h4>邮政编码</h4>
+                <p>316022</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-card">
+    <h2>学术社交</h2>
+    <div class="social-links">
+        <a href="https://scholar.google.com" target="_blank" class="social-link">
+            <span class="social-icon">🎓</span>
+            <span>Google Scholar</span>
+        </a>
+        <a href="https://github.com" target="_blank" class="social-link">
+            <span class="social-icon">💻</span>
+            <span>GitHub</span>
+        </a>
+        <a href="https://www.researchgate.net" target="_blank" class="social-link">
+            <span class="social-icon">📚</span>
+            <span>ResearchGate</span>
+        </a>
+        <a href="https://orcid.org" target="_blank" class="social-link">
+            <span class="social-icon">🆔</span>
+            <span>ORCID</span>
+        </a>
+    </div>
+</section>
+
+<section class="content-card">
+    <h2>办公时间</h2>
+    <markdown>
+### 工作日
+- **周一至周五**: 9:00 - 17:00
+- **午休时间**: 12:00 - 13:30
+
+### 学生答疑时间
+- **周二**: 14:00 - 16:00
+- **周四**: 14:00 - 16:00
+
+### 注意事项
+如需预约，请提前通过邮件联系。
+    </markdown>
+</section>
+
+<style>
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .contact-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .contact-icon {
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .contact-info h4 {
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+
+    .contact-info p {
+        color: #7f8c8d;
+        line-height: 1.6;
+    }
+
+    .contact-info a {
+        color: var(--secondary-color);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .contact-info a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    .social-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-link {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #2c3e50;
+        transition: all 0.3s;
+    }
+
+    .social-link:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .social-icon {
+        font-size: 1.8rem;
+    }
+</style>

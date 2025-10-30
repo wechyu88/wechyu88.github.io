@@ -1,0 +1,323 @@
+<!-- ============================================
+    页面模板文件
+    复制此文件创建新页面
+    ============================================ -->
+
+<!-- 页面标题 -->
+<header class="page-header">
+    <h1>页面标题</h1>
+    <p>Page Title in English</p>
+</header>
+
+<!-- ==================== 模块1：文本内容 ==================== -->
+<section class="content-card">
+    <h2>📝 纯文本内容</h2>
+    <p>这里是纯文本内容段落。</p>
+    <p>可以使用多个段落。</p>
+</section>
+
+<!-- ==================== 模块2：Markdown内容 ==================== -->
+<section class="content-card">
+    <h2>📋 Markdown内容</h2>
+    <markdown>
+## 二级标题
+
+这是**粗体**文本，这是*斜体*文本。
+
+### 列表示例
+- 列表项 1
+- 列表项 2
+- 列表项 3
+
+### 代码示例
+```python
+def hello_world():
+    print("Hello, World!")
+```
+
+### 链接
+[点击这里](https://example.com)
+    </markdown>
+</section>
+
+<!-- ==================== 模块3：图片展示 ==================== -->
+<section class="content-card">
+    <h2>🖼️ 图片展示</h2>
+
+    <!-- 单张图片 -->
+    <div class="single-image">
+        <img src="images/example.jpg" alt="示例图片">
+        <p class="image-caption">图片说明文字</p>
+    </div>
+
+    <!-- 图片网格（多张图片） -->
+    <div class="image-grid">
+        <div class="image-item">
+            <img src="images/example1.jpg" alt="图片1">
+            <p class="image-caption">图片1说明</p>
+        </div>
+        <div class="image-item">
+            <img src="images/example2.jpg" alt="图片2">
+            <p class="image-caption">图片2说明</p>
+        </div>
+        <div class="image-item">
+            <img src="images/example3.jpg" alt="图片3">
+            <p class="image-caption">图片3说明</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 模块4：文献/文件下载 ==================== -->
+<section class="content-card">
+    <h2>📚 文献下载</h2>
+
+    <!-- 方式1：直接下载链接 -->
+    <div class="download-item">
+        <h4>文献标题1</h4>
+        <p>文献描述信息</p>
+        <a href="downloads/papers/paper-001.pdf" class="btn btn-primary" download>
+            📄 下载PDF
+        </a>
+    </div>
+
+    <!-- 方式2：使用全局数据渲染 -->
+    <div id="paper-list">
+        <!-- 由JavaScript动态生成 -->
+    </div>
+</section>
+
+<!-- ==================== 模块5：卡片列表 ==================== -->
+<section class="content-card">
+    <h2>📦 卡片列表</h2>
+    <div class="card-grid">
+        <div class="info-card">
+            <div class="card-icon">🎯</div>
+            <h4>卡片标题1</h4>
+            <p>卡片内容描述</p>
+        </div>
+        <div class="info-card">
+            <div class="card-icon">🚀</div>
+            <h4>卡片标题2</h4>
+            <p>卡片内容描述</p>
+        </div>
+        <div class="info-card">
+            <div class="card-icon">⭐</div>
+            <h4>卡片标题3</h4>
+            <p>卡片内容描述</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 模块6：时间线 ==================== -->
+<section class="content-card">
+    <h2>📅 时间线</h2>
+    <ul class="timeline">
+        <li>
+            <strong>2024-01</strong> - 事件描述1
+        </li>
+        <li>
+            <strong>2023-12</strong> - 事件描述2
+        </li>
+        <li>
+            <strong>2023-10</strong> - 事件描述3
+        </li>
+    </ul>
+</section>
+
+<!-- ==================== 模块7：表格 ==================== -->
+<section class="content-card">
+    <h2>📊 表格数据</h2>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>列1</th>
+                    <th>列2</th>
+                    <th>列3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>数据1</td>
+                    <td>数据2</td>
+                    <td>数据3</td>
+                </tr>
+                <tr>
+                    <td>数据4</td>
+                    <td>数据5</td>
+                    <td>数据6</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ==================== 模块8：标签云 ==================== -->
+<section class="content-card">
+    <h2>🏷️ 标签/关键词</h2>
+    <div class="tag-cloud">
+        <span class="tag">标签1</span>
+        <span class="tag">标签2</span>
+        <span class="tag">标签3</span>
+        <span class="tag">标签4</span>
+        <span class="tag">标签5</span>
+    </div>
+</section>
+
+<!-- ==================== 模块9：引用特定数据 ==================== -->
+<script>
+    // 使用全局数据渲染特定论文
+    const specificPapers = ['paper-001', 'paper-002']; // 填写论文ID
+    document.getElementById('paper-list').innerHTML = renderPapers(specificPapers);
+
+    // 或者使用过滤条件
+    // const papers2023 = globalData.papers.filter(p => p.year === 2023);
+    // document.getElementById('paper-list').innerHTML = renderPapers(papers2023.map(p => p.id));
+</script>
+
+<!-- ==================== 页面特定样式 ==================== -->
+<style>
+    /* 图片样式 */
+    .single-image {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .single-image img {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .image-item img {
+        width: 100%;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+
+    .image-item img:hover {
+        transform: scale(1.05);
+    }
+
+    .image-caption {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    /* 下载项样式 */
+    .download-item {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .download-item h4 {
+        margin-bottom: 10px;
+    }
+
+    /* 卡片网格 */
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .info-card {
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .info-card:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    /* 时间线样式 */
+    .timeline {
+        list-style: none;
+        padding: 0;
+    }
+
+    .timeline li {
+        padding: 15px 0 15px 20px;
+        border-left: 3px solid var(--secondary-color);
+        margin-bottom: 10px;
+    }
+
+    .timeline li strong {
+        color: var(--secondary-color);
+    }
+
+    /* 表格样式 */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .data-table th {
+        background: var(--primary-color);
+        color: white;
+        font-weight: 600;
+    }
+
+    .data-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    /* 标签云 */
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #e8f4f8;
+        color: var(--primary-color);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+    }
+
+    .tag:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.05);
+    }
+</style>

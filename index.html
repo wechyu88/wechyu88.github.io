@@ -3,321 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>温成远 - 个人学术主页</title>
+    <title>温程远 - 个人学术主页</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <!-- Markdown支持 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <!-- 侧边栏导航 -->
-    <aside class="sidebar">
+    <!-- ==================== 固定侧边栏 ==================== -->
+    <aside class="sidebar" id="main-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-avatar">
-                <img src="images/Avatar.jpg" alt="温成远">
+                <img src="images/Avatar.jpg" alt="温程远">
             </div>
-            <h2 id="nav-name">温成远</h2>
-            <p id="nav-title">副教授</p>
-            <p id="nav-affiliation">浙江海洋大学</p>
+            <h2>温程远</h2>
+            <p>副教授</p>
+            <p>浙江海洋大学</p>
         </div>
 
         <nav>
             <ul class="nav-menu">
-                <!-- 研究方向 -->
+                <!-- ============ 首页 ============ -->
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/home.html')" class="nav-link active">
+                        <i>🏠</i> 首页
+                    </a>
+                </li>
+
+                <!-- ============ 研究方向（带子菜单） ============ -->
                 <li class="nav-item has-submenu">
                     <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
                         <i>🔬</i> 研究方向
                     </a>
                     <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/research/ai-robotics.html" class="nav-link">人工智能与机器人</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/research/computer-vision.html" class="nav-link">计算机视觉</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/research/machine-learning.html" class="nav-link">机器学习</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/research/data-mining.html" class="nav-link">数据挖掘</a>
-                        </li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/research-ai.html')">人工智能与机器人</a></li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/research-cv.html')">计算机视觉</a></li>
+                        <!-- 添加新研究方向：复制上面一行，修改文件名和标题 -->
                     </ul>
                 </li>
 
-                <!-- 研究成果 -->
+                <!-- ============ 研究成果 ============ -->
                 <li class="nav-item has-submenu">
                     <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
                         <i>📚</i> 研究成果
                     </a>
                     <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/achievements/all.html" class="nav-link">总成果</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/achievements/education.html" class="nav-link">博士硕士期间</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/achievements/work.html" class="nav-link">工作期间</a>
-                        </li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/achievements-all.html')">总成果</a></li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/achievements-journals.html')">期刊论文</a></li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/achievements-conferences.html')">会议论文</a></li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/achievements-patents.html')">专利</a></li>
                     </ul>
                 </li>
 
-                <!-- 教学工作 -->
+                <!-- ============ 教学工作 ============ -->
                 <li class="nav-item has-submenu">
                     <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
                         <i>📖</i> 教学工作
                     </a>
                     <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/teaching/courses.html" class="nav-link">授课课程</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/teaching/textbooks.html" class="nav-link">编写教材</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/teaching/awards.html" class="nav-link">教学获奖</a>
-                        </li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/teaching-courses.html')">授课课程</a></li>
+                        <li><a href="javascript:void(0)" onclick="loadPage('pages/teaching-textbooks.html')">编写教材</a></li>
                     </ul>
                 </li>
 
-                <!-- 学生指导 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                <!-- ============ 学生指导 ============ -->
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/students.html')" class="nav-link">
                         <i>👨‍🎓</i> 学生指导
                     </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/students/current.html" class="nav-link">在读学生</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/students/graduated.html" class="nav-link">已毕业学生</a>
-                        </li>
-                    </ul>
                 </li>
 
-                <!-- 竞赛指导 -->
+                <!-- ============ 竞赛指导 ============ -->
                 <li class="nav-item">
-                    <a href="pages/competitions.html" class="nav-link">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/competitions.html')" class="nav-link">
                         <i>🏆</i> 竞赛指导
                     </a>
                 </li>
 
-                <!-- 学术服务 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>🤝</i> 学术服务
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/service/review.html" class="nav-link">审稿服务</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/service/committee.html" class="nav-link">学术委员会</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- 学术活动 -->
-                <li class="nav-item has-submenu">
-                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
-                        <i>🎤</i> 学术活动
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="pages/activities/talks.html" class="nav-link">学术报告</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/activities/visits.html" class="nav-link">访问交流</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- 荣誉奖项 -->
+                <!-- ============ 荣誉奖项 ============ -->
                 <li class="nav-item">
-                    <a href="pages/honors.html" class="nav-link">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/honors.html')" class="nav-link">
                         <i>🌟</i> 荣誉奖项
                     </a>
                 </li>
 
-                <!-- 新闻动态 -->
+                <!-- ============ 联系方式 ============ -->
                 <li class="nav-item">
-                    <a href="pages/news.html" class="nav-link">
-                        <i>📰</i> 新闻动态
-                    </a>
-                </li>
-
-                <!-- 资源下载 -->
-                <li class="nav-item">
-                    <a href="pages/resources.html" class="nav-link">
-                        <i>📦</i> 资源下载
-                    </a>
-                </li>
-
-                <!-- 联系方式 -->
-                <li class="nav-item">
-                    <a href="pages/contact.html" class="nav-link">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/contact.html')" class="nav-link">
                         <i>📧</i> 联系方式
                     </a>
                 </li>
+
+                <!-- ============ 添加新菜单示例（已注释） ============ -->
+                <!--
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="loadPage('pages/new-page.html')" class="nav-link">
+                        <i>📄</i> 新页面
+                    </a>
+                </li>
+                -->
             </ul>
         </nav>
+
+        <!-- 统计信息（自动计数） -->
+        <div class="sidebar-stats">
+            <div class="stat-item">
+                <span class="stat-number" id="total-papers">0</span>
+                <span class="stat-label">论文</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="total-patents">0</span>
+                <span class="stat-label">专利</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="total-students">0</span>
+                <span class="stat-label">学生</span>
+            </div>
+        </div>
     </aside>
 
-    <!-- 主内容区域 -->
-    <main class="main-content">
-        <div class="container">
-            <!-- 个人简介卡片 -->
-            <section class="content-card fade-in" id="personal-intro">
-                <div style="display: flex; gap: 30px; align-items: start;">
-                    <div style="flex: 1;">
-                        <h1 style="margin-top: 0;">温程远</h1>
-                        <h3 style="color: #7f8c8d; margin: 10px 0;">Chengyuan Wen</h3>
-                        <p><strong>职称：</strong>副教授</p>
-                        <p><strong>单位：</strong>浙江海洋大学</p>
-                        <p><strong>邮箱：</strong>your-email@example.com</p>
-
-                        <div style="margin-top: 20px;">
-                            <h3>研究兴趣</h3>
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <span class="tag">人工智能</span>
-                                <span class="tag">计算机视觉</span>
-                                <span class="tag">机器学习</span>
-                                <span class="tag">深度学习</span>
-                                <span class="tag">机器人技术</span>
-                                <span class="tag">数据挖掘</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="width: 200px; flex-shrink: 0;">
-                        <img src="images/Avatar.jpg" alt="温成远" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
-                    </div>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <h3>个人简介</h3>
-                    <p id="bio-text">
-                        我是温成远（Chengyuan Wen），目前在浙江海洋大学从事人工智能、计算机视觉、机器学习等领域的研究和教学工作。
-                        我的研究兴趣包括深度学习、计算机视觉、机器人技术以及数据挖掘等方向。
-                    </p>
-                    <p id="intro-text">
-                        在学术研究过程中，我注重理论与实践相结合，致力于将先进的人工智能技术应用于实际问题的解决。
-                        同时，我也热衷于指导学生参与科研项目和学科竞赛，培养学生的创新能力和实践能力。
-                    </p>
-                </div>
-            </section>
-
-            <!-- 成果统计 -->
-            <section class="content-card fade-in">
-                <h2>成果概览</h2>
-                <div class="research-grid">
-                    <div class="research-item" style="cursor: pointer;" onclick="location.href='pages/achievements/all.html'">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">45+</h3>
-                            <p>发表论文</p>
-                        </div>
-                    </div>
-                    <div class="research-item" style="cursor: pointer;" onclick="location.href='pages/achievements/all.html'">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">10+</h3>
-                            <p>授权专利</p>
-                        </div>
-                    </div>
-                    <div class="research-item" style="cursor: pointer;" onclick="location.href='pages/achievements/all.html'">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">20+</h3>
-                            <p>科研项目</p>
-                        </div>
-                    </div>
-                    <div class="research-item" style="cursor: pointer;" onclick="location.href='pages/honors.html'">
-                        <div class="research-content" style="text-align: center; padding: 2rem;">
-                            <h3 style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 0.5rem;">15+</h3>
-                            <p>获奖荣誉</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 研究领域 -->
-            <section class="content-card fade-in">
-                <h2>研究领域</h2>
-                <div class="research-grid">
-                    <div class="research-item">
-                        <div class="research-image">
-                            <img src="assets/images/test/placeholder.jpg" alt="人工智能与机器人">
-                        </div>
-                        <div class="research-content">
-                            <h4>🤖 人工智能与机器人</h4>
-                            <p>研究智能机器人系统、自主导航、人机交互等前沿技术。</p>
-                            <a href="pages/research/ai-robotics.html" class="btn btn-primary">了解更多</a>
-                        </div>
-                    </div>
-
-                    <div class="research-item">
-                        <div class="research-image">
-                            <img src="assets/images/test/placeholder.jpg" alt="计算机视觉">
-                        </div>
-                        <div class="research-content">
-                            <h4>👁️ 计算机视觉</h4>
-                            <p>专注于图像识别、目标检测、场景理解等计算机视觉技术。</p>
-                            <a href="pages/research/computer-vision.html" class="btn btn-primary">了解更多</a>
-                        </div>
-                    </div>
-
-                    <div class="research-item">
-                        <div class="research-image">
-                            <img src="assets/images/test/placeholder.jpg" alt="机器学习">
-                        </div>
-                        <div class="research-content">
-                            <h4>🧠 机器学习</h4>
-                            <p>深入研究深度学习、强化学习、迁移学习等机器学习方法。</p>
-                            <a href="pages/research/machine-learning.html" class="btn btn-primary">了解更多</a>
-                        </div>
-                    </div>
-
-                    <div class="research-item">
-                        <div class="research-image">
-                            <img src="assets/images/test/placeholder.jpg" alt="数据挖掘">
-                        </div>
-                        <div class="research-content">
-                            <h4>📊 数据挖掘</h4>
-                            <p>利用数据挖掘技术发现数据中的模式和知识，支持决策分析。</p>
-                            <a href="pages/research/data-mining.html" class="btn btn-primary">了解更多</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 最新动态 -->
-            <section class="content-card fade-in">
-                <h2>最新动态</h2>
-                <ul class="achievement-list" id="news-list">
-                    <li class="achievement-item">
-                        <h4>论文被顶级会议录用</h4>
-                        <p class="meta">2024年10月</p>
-                        <p>我们团队的论文被CVPR 2025录用，恭喜团队成员！</p>
-                    </li>
-                    <li class="achievement-item">
-                        <h4>指导学生获得国家级竞赛金奖</h4>
-                        <p class="meta">2024年9月</p>
-                        <p>指导学生团队在中国国际大学生创新大赛中获得国家级金奖。</p>
-                    </li>
-                    <li class="achievement-item">
-                        <h4>主持国家自然科学基金项目获批</h4>
-                        <p class="meta">2024年8月</p>
-                        <p>主持的国家自然科学基金面上项目获得批准立项。</p>
-                    </li>
-                </ul>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="pages/news.html" class="btn btn-primary">查看更多动态</a>
-                </div>
-            </section>
+    <!-- ==================== 主内容区域（动态加载） ==================== -->
+    <main class="main-content" id="main-content">
+        <div class="container" id="page-container">
+            <!-- 内容将从pages/目录的HTML文件加载 -->
+            <div class="loading">加载中...</div>
         </div>
     </main>
 
-    <!-- 加载数据和内联CMS -->
-    <script src="assets/js/data.js"></script>
-    <script src="assets/js/inline-cms.js"></script>
+    <!-- ==================== JavaScript ==================== -->
+    <!-- 全局数据管理 -->
+    <script src="assets/js/global-data.js"></script>
 
-    <!-- JavaScript -->
+    <!-- 页面加载器 -->
     <script>
+        // 页面加载函数
+        async function loadPage(pagePath) {
+            const container = document.getElementById('page-container');
+
+            try {
+                container.innerHTML = '<div class="loading">加载中...</div>';
+
+                const response = await fetch(pagePath);
+                if (!response.ok) throw new Error('页面加载失败');
+
+                let html = await response.text();
+
+                // 处理Markdown内容
+                html = processMarkdown(html);
+
+                container.innerHTML = html;
+
+                // 更新活动链接状态
+                updateActiveLink(pagePath);
+
+                // 滚动到顶部
+                window.scrollTo(0, 0);
+
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <h2>⚠️ 页面加载失败</h2>
+                        <p>无法加载 ${pagePath}</p>
+                        <p class="error-detail">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 处理Markdown内容
+        function processMarkdown(html) {
+            // 查找所有 <markdown> 标签
+            const markdownRegex = /<markdown>([\s\S]*?)<\/markdown>/g;
+            return html.replace(markdownRegex, (match, content) => {
+                return marked.parse(content.trim());
+            });
+        }
+
+        // 更新活动链接状态
+        function updateActiveLink(pagePath) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.querySelectorAll(`a[onclick*="${pagePath}"]`).forEach(link => {
+                link.classList.add('active');
+            });
+        }
+
         // 切换子菜单
         function toggleSubmenu(element) {
             const parent = element.parentElement;
@@ -334,34 +206,72 @@
             }
         }
 
-        // 页面加载动画
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.fade-in');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                }, index * 100);
-            });
-
-            // 从数据文件加载内容
-            if (typeof siteData !== 'undefined') {
-                loadPersonalInfo();
-            }
+        // 页面加载时加载首页
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPage('pages/home.html');
+            updateStats(); // 更新统计数据
         });
-
-        // 从数据文件加载个人信息
-        function loadPersonalInfo() {
-            const p = siteData.personal;
-
-            // 更新导航栏
-            document.getElementById('nav-name').textContent = p.name;
-            document.getElementById('nav-title').textContent = p.title;
-            document.getElementById('nav-affiliation').textContent = p.affiliation;
-
-            // 更新主内容区
-            document.getElementById('bio-text').textContent = p.bio;
-            document.getElementById('intro-text').textContent = p.introduction;
-        }
     </script>
+
+    <style>
+        /* 侧边栏统计信息样式 */
+        .sidebar-stats {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* 加载和错误提示 */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .error-message h2 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .error-detail {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* 活动链接样式 */
+        .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            border-left: 3px solid var(--secondary-color);
+        }
+    </style>
 </body>
 </html>

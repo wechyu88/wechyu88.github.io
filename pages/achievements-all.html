@@ -1,0 +1,95 @@
+<!-- 全部成果页面 -->
+<header class="page-header">
+    <h1>📚 研究成果总览</h1>
+    <p>Research Achievements Overview</p>
+</header>
+
+<section class="content-card">
+    <h2>📄 期刊论文 (<span id="journal-count">0</span>篇)</h2>
+    <div id="journals"></div>
+</section>
+
+<section class="content-card">
+    <h2>📋 会议论文 (<span id="conference-count">0</span>篇)</h2>
+    <div id="conferences"></div>
+</section>
+
+<section class="content-card">
+    <h2>🔬 专利 (<span id="patent-count">0</span>项)</h2>
+    <div id="patents"></div>
+</section>
+
+<script>
+    // 渲染期刊论文
+    const journals = getPapersByType('journal');
+    document.getElementById('journal-count').textContent = journals.length;
+    document.getElementById('journals').innerHTML = renderPapers(journals.map(p => p.id));
+
+    // 渲染会议论文
+    const conferences = getPapersByType('conference');
+    document.getElementById('conference-count').textContent = conferences.length;
+    document.getElementById('conferences').innerHTML = renderPapers(conferences.map(p => p.id));
+
+    // 渲染专利
+    document.getElementById('patent-count').textContent = globalData.patents.length;
+    document.getElementById('patents').innerHTML = renderPatents();
+</script>
+
+<style>
+    .paper-item,
+    .patent-item {
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .paper-item:hover,
+    .patent-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .paper-item h4,
+    .patent-item h4 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .meta {
+        color: #7f8c8d;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .abstract {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        line-height: 1.8;
+    }
+
+    .actions {
+        margin-top: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+</style>

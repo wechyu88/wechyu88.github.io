@@ -1,0 +1,64 @@
+<!-- 人工智能与机器人研究方向 -->
+<header class="page-header">
+    <h1>🤖 人工智能与机器人</h1>
+    <p>Artificial Intelligence & Robotics</p>
+</header>
+
+<section class="content-card">
+    <h2>研究方向介绍</h2>
+    <markdown>
+## 研究内容
+
+本方向主要研究**人工智能**和**机器人技术**的交叉领域，包括：
+
+- **机器人视觉感知**：研究机器人在复杂环境中的视觉理解和场景认知
+- **智能控制**：开发基于深度学习的机器人控制算法
+- **人机交互**：研究自然、安全的人机协作方式
+- **移动机器人导航**：实现机器人在未知环境中的自主导航
+
+## 研究特色
+
+✨ 结合**理论研究**与**工程实践**  
+✨ 注重**跨学科融合**创新  
+✨ 强调**实际应用**导向
+    </markdown>
+</section>
+
+<section class="content-card">
+    <h2>代表性成果</h2>
+    <div id="related-papers"></div>
+</section>
+
+<section class="content-card">
+    <h2>研究团队</h2>
+    <p>本方向现有教师3人，在读硕士研究生8人。</p>
+    <div id="related-students"></div>
+</section>
+
+<script>
+    // 显示相关论文（这里简单显示前2篇，实际应根据关键词筛选）
+    const relatedPapers = globalData.papers.slice(0, 2);
+    document.getElementById('related-papers').innerHTML = renderPapers(relatedPapers.map(p => p.id));
+
+    // 显示相关学生（这里简单显示所有在读学生，实际应根据研究方向筛选）
+    const relatedStudents = getStudentsByStatus('在读').slice(0, 3);
+    document.getElementById('related-students').innerHTML = renderStudents(relatedStudents.map(s => s.id));
+</script>
+
+<style>
+    .paper-item,
+    .student-card {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .paper-item:hover,
+    .student-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+</style>

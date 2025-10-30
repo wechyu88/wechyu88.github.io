@@ -1,0 +1,39 @@
+<!-- 会议论文列表 -->
+<header class="page-header">
+    <h1>📋 会议论文</h1>
+    <p>Conference Publications</p>
+</header>
+
+<section class="content-card">
+    <div id="conference-list"></div>
+</section>
+
+<script>
+    // 渲染会议论文
+    const conferences = getPapersByType('conference');
+    document.getElementById('conference-list').innerHTML = renderPapers(conferences.map(p => p.id)) ||
+        '<p class="empty-message">暂无会议论文</p>';
+</script>
+
+<style>
+    .paper-item {
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .paper-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 50px 20px;
+        color: #95a5a6;
+        font-size: 1.1rem;
+    }
+</style>
