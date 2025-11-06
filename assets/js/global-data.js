@@ -75,11 +75,123 @@ window.globalData = {
     competitions: [
         {
             id: 'competition-001',
-            name: '全国大学生智能车竞赛',
+            name: '“华为杯”第五届中国研究生人工智能创新大赛',
+            award: '全国三等奖',
+            date: '2023-09',
+            project: '海洋之眼——水下AI智能实时检测机器人',
+            students: ['王加慧', '孟令一', '闫愣愣'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-002',
+            name: '“兆易创新杯”第十九届中国研究生电子设计赛',
+            award: '全国二等奖',
+            date: '2024-07',
+            project: '水下精灵-一水下设施安全智能检测机器人',
+            students: ['汪克林', '王加慧', '周慧君'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-003',
+            name: '第二届中国研究生“双碳”创新与创意大赛',
             award: '全国一等奖',
-            date: '2023-08',
-            project: '智能导航系统',
-            students: ['张三', '李四', '王五'],
+            date: '2023-10',
+            project: 'xxxxxxxxxxxxxxxxxxx',
+            students: ['王加慧','刘叙','闫愣愣','汪克林','柴志刚'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-004',
+            name: '浙江省第十八届“挑战杯”工商银行大学生课外学术科技作品竞赛',
+            award: '金奖',
+            date: '2023-05',
+            project: '海洋卫士--水下设施安全智能检测机器人',
+            students: ['王加慧','柴志刚','崔智强','胡偲琪','桑飘飘','项思哲','王银璐','何拓'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-005',
+            name: '“农行杯”浙江省国际大学生创新大赛(2025)',
+            award: '银奖',
+            date: '2025-08',
+            project: '数智出海一--AIGC赋能跨境电商',
+            students: ['胡沛乐','陈昕睿','徐嘉玲','骆意瑾','景盈盈','莫佳慧','占雨霏','何舒恒','董姿辰','田楊楠'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-006',
+            name: '2023“中石协·石化机械杯’第十届中国研究生能源装备创新设计大赛',
+            award: '全国一等奖',
+            date: '2023-09',
+            project: '水下精灵一-水下设施安全智能检测机器人',
+            students: ['王加慧','刘叙','闫愣愣','汪克林','柴志刚'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-007',
+            name: '浙江省第十九届“挑战杯大学生课外学术科技作品竞赛“人工智能+”专项赛',
+            award: '铜奖',
+            date: '2025-07',
+            project: '雾散明镜--医疗内窥镜智能实时去雾系统',
+            students: ['何舒恒','李蕊','傅镜澄','董姿辰','陈听','徐嘉玲','裘文汇','蔡嘉','孙健哲','胡沛乐'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-008',
+            name: '浙江省第十九届“挑战杯大学生课外学术科技作品竞赛主体赛',
+            award: '金奖',
+            date: '2025-05',
+            project: 'AI天平的断裂:生成式人工智能教育应用的城乡失衡风险与破局之道--基于42县区127所学校的对比分析',
+            students: ['何舒恒','陈昕睿','董姿辰','胡沛乐','莫佳慧','占雨霏','张箫飏','孔佳豪'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+
+        {
+            id: 'competition-009',
+            name: '浙江省第十九届“挑战杯大学生课外学术科技作品竞赛“人工智能+”专项赛',
+            award: '银奖',
+            date: '2025-07',
+            project: '“深蓝智联”:人工智能驱动的海洋通信终端',
+            students: ['徐嘉玲','余雯静','周芷婷','陈诗音','林文哲','蔡嘉麒','裘文汇','孙健哲'],
             images: [
                 'images/competitions/comp-001-1.jpg',
                 'images/competitions/comp-001-2.jpg'
