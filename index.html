@@ -4,10 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>温程远 - 个人学术主页</title>
+    <!-- 缓存控制（开发环境建议启用，生产环境可注释掉） -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <!-- Markdown支持 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 添加 marked 加载检测 -->
+    <script>
+        // 等待 marked 库加载完成的 Promise
+        window.markedReady = new Promise((resolve) => {
+            if (typeof marked !== 'undefined') {
+                resolve();
+            } else {
+                const checkMarked = setInterval(() => {
+                    if (typeof marked !== 'undefined') {
+                        clearInterval(checkMarked);
+                        resolve();
+                    }
+                }, 50); // 每 50ms 检查一次
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- ==================== 固定侧边栏 ==================== -->
@@ -160,15 +180,19 @@
             try {
                 container.innerHTML = '<div class="loading">加载中...</div>';
 
-                const response = await fetch(pagePath);
+                const response = await fetch(pagePath + '?t=' + Date.now()); // 添加时间戳防止缓存
                 if (!response.ok) throw new Error('页面加载失败');
 
                 let html = await response.text();
 
-                // 处理Markdown内容
-                html = processMarkdown(html);
+                // 等待 marked 加载完成后再处理 Markdown
+                await window.markedReady;
+                html = await processMarkdown(html);
 
                 container.innerHTML = html;
+
+                // 执行页面中的脚本（如果有）
+                executePageScripts(container);
 
                 // 更新活动链接状态
                 updateActiveLink(pagePath);
@@ -208,13 +232,56 @@
             }
         }
 
-        // 处理Markdown内容
-        function processMarkdown(html) {
+        // 处理Markdown内容（异步版本，确保 marked 已加载）
+        async function processMarkdown(html) {
+            // 确保 marked 已加载
+            if (typeof marked === 'undefined') {
+                console.error('❌ marked 库未加载');
+                return html;
+            }
+
             // 查找所有 <markdown> 标签
             const markdownRegex = /<markdown>([\s\S]*?)<\/markdown>/g;
             return html.replace(markdownRegex, (match, content) => {
-                return marked.parse(content.trim());
+                try {
+                    return marked.parse(content.trim());
+                } catch (error) {
+                    console.error('❌ Markdown 解析错误:', error);
+                    return `<div class="error">Markdown 解析失败: ${error.message}</div>`;
+                }
             });
+        }
+
+        // 执行页面中的脚本（改进版，添加调试和延迟执行）
+        function executePageScripts(container) {
+            const scripts = container.querySelectorAll('script');
+            console.log(`📝 发现 ${scripts.length} 个脚本标签`);
+
+            scripts.forEach((oldScript, index) => {
+                const newScript = document.createElement('script');
+
+                // 复制所有属性
+                Array.from(oldScript.attributes).forEach((attr) => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+
+                // 如果是内联脚本，复制内容
+                if (!oldScript.src) {
+                    newScript.textContent = oldScript.textContent;
+                    console.log(`✅ 准备执行第 ${index + 1} 个内联脚本（${oldScript.textContent.length} 字符）`);
+                }
+
+                // 替换旧脚本以触发执行
+                try {
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                    console.log(`✅ 第 ${index + 1} 个脚本已执行`);
+                } catch (error) {
+                    console.error(`❌ 执行第 ${index + 1} 个脚本时出错:`, error);
+                }
+            });
+
+            // 额外确保：如果脚本使用 setTimeout，给它足够时间执行
+            console.log('⏱️ 等待脚本中的异步操作完成...');
         }
 
         // 更新活动链接状态

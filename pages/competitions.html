@@ -23,65 +23,104 @@
 </section>
 
 <script>
-    // 添加文件加载检查
-    console.log('开始加载全局数据文件...');
-</script>
+    console.log('🚀 competitions.html 的脚本开始加载');
 
-<script src="../assets/js/global-data.js"></script>
+    // 渲染竞赛列表（立即执行函数，适配 SPA 环境）
+    (function renderCompetitions() {
+        console.log('🔄 renderCompetitions IIFE 已执行，准备渲染...');
 
+        let rendered = false; // 防止重复渲染
 
-<script >
-/*     // 渲染竞赛列表
+        // 使用多重策略确保 DOM 已就绪
+        function attemptRender() {
+            if (rendered) {
+                console.log('⏭️ 已经渲染过，跳过');
+                return;
+            }
 
-    const competitions = globalData.competitions;
-    const competitionHTML = competitions.map(comp => `
-        <div class="competition-item">
-            <h3>${comp.name} - ${comp.award}</h3>
-            <p class="meta">
-                <strong>时间：</strong>${comp.date}<br>
-                <strong>项目：</strong>${comp.project}<br>
-                <strong>学生：</strong>${comp.students.join(', ')}
-            </p>
-            ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
-            ${comp.images && comp.images.length > 0 ? `
-                <div class="competition-gallery">
-                    ${comp.images.map(img => `
-                        <img src="${img}" alt="${comp.name}">
-                    `).join('')}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+            console.log('⏰ 尝试渲染竞赛列表...');
 
-    document.getElementById('competition-list').innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
- */
+            try {
+                // 检查 globalData 是否存在
+                console.log('🔍 检查 globalData:', typeof globalData);
+                console.log('🔍 检查 globalData.competitions:', typeof globalData?.competitions);
+                console.log('🔍 competitions 数组长度:', globalData?.competitions?.length);
 
-  window.onload = function() {
-    console.log(globalData); // 查看 globalData 是否正确加载    
-    const competitions = globalData.competitions; // 确保 globalData 已经加载
-        const competitionHTML = competitions.map(comp => `
-            <div class="competition-item">
-                <h3>${comp.name} - ${comp.award}</h3>
-                <p class="meta">
-                    <strong>时间：</strong>${comp.date}<br>
-                    <strong>项目：</strong>${comp.project}<br>
-                    <strong>学生：</strong>${comp.students.join(', ')}
-                </p>
-                ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
-                ${comp.images && comp.images.length > 0 ? `
-                    <div class="competition-gallery">
-                        ${comp.images.map(img => `
-                            <img src="${img}" alt="${comp.name}">
-                        `).join('')}
+                if (typeof globalData === 'undefined' || !globalData.competitions) {
+                    console.warn('⚠️ globalData 未就绪，等待下次尝试...');
+                    return; // 不设置 rendered = true，允许重试
+                }
+
+                console.log('✅ globalData 已加载，开始渲染竞赛列表');
+                const competitions = globalData.competitions;
+
+                const listElement = document.getElementById('competition-list');
+                console.log('🔍 查找 competition-list 元素:', listElement);
+
+                if (!listElement) {
+                    console.warn('⚠️ competition-list 元素未找到，等待下次尝试...');
+                    return; // 不设置 rendered = true，允许重试
+                }
+
+                // 生成 HTML
+                const competitionHTML = competitions.map(comp => `
+                    <div class="competition-item">
+                        <h3>${comp.name} - ${comp.award}</h3>
+                        <p class="meta">
+                            <strong>时间：</strong>${comp.date}<br>
+                            <strong>项目：</strong>${comp.project}<br>
+                            <strong>学生：</strong>${comp.students.join(', ')}
+                        </p>
+                        ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
+                        ${comp.images && comp.images.length > 0 ? `
+                            <div class="competition-gallery">
+                                ${comp.images.map(img => `
+                                    <img src="${img}" alt="${comp.name}">
+                                `).join('')}
+                            </div>
+                        ` : ''}
                     </div>
-                ` : ''}
-            </div>
-        `).join('');
+                `).join('');
 
-        document.getElementById('competition-list').innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
-    };
+                console.log('✅ HTML 生成完成，长度:', competitionHTML.length);
 
-    
+                // 渲染到 DOM
+                listElement.innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
+                rendered = true; // 标记已渲染，防止重复
+                console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录到 DOM`);
+
+            } catch (error) {
+                console.error('❌ 渲染竞赛列表时出错:', error);
+                console.error('错误堆栈:', error.stack);
+                const listEl = document.getElementById('competition-list');
+                if (listEl) {
+                    listEl.innerHTML = '<p class="empty-message">渲染失败：' + error.message + '</p>';
+                    rendered = true; // 即使出错也标记为已处理
+                }
+            }
+        }
+
+        // 策略1：立即尝试（元素可能已经在 DOM 中）
+        attemptRender();
+
+        // 策略2：下一个事件循环再次尝试（通常会成功）
+        setTimeout(attemptRender, 0);
+
+        // 策略3：100ms 后再次尝试（兜底）
+        setTimeout(attemptRender, 100);
+
+        // 策略4：500ms 后最后尝试（终极兜底）
+        setTimeout(function() {
+            if (!rendered) {
+                console.log('🔄 500ms 后最后一次尝试渲染');
+                attemptRender();
+            }
+        }, 500);
+
+        console.log('✅ 多重渲染策略已设置');
+    })();
+
+    console.log('✅ competitions.html 的脚本执行完成');
 </script>
 
 
