@@ -53,11 +53,12 @@ window.globalData = {
     students: [
         {
             id: 'student-001',
-            name: '张三',
+            name: '张硕',
             level: '硕士研究生',
-            year: '2021级',
-            status: '在读', // '在读' 或 '已毕业'
-            research: '计算机视觉',
+            year: '2022级',
+            status: '已毕业', // '在读' 或 '已毕业'
+             photo: 'images/students/student-001.jpg',
+            /*research: '计算机视觉',
             photo: 'images/students/student-001.jpg',
             achievements: [
                 '发表SCI论文1篇',
@@ -66,7 +67,27 @@ window.globalData = {
             graduation: {
                 thesis: '基于深度学习的目标检测研究',
                 destination: '阿里巴巴集团'
-            }
+            }*/
+        },
+
+        {
+            id: 'student-002',
+            name: '陶冉',
+            level: '硕士研究生',
+            year: '2022级',
+            status: '已毕业', // '在读' 或 '已毕业'
+             photo: 'images/students/student-002.jpg',
+            
+        },
+
+        {
+            id: 'student-003',
+            name: '孔佳豪',
+            level: '本科生',
+            year: '2021级',
+            status: '已毕业', // '在读' 或 '已毕业'
+             photo: 'images/students/student-003.jpg',
+            
         }
         // 添加更多学生...
     ],
@@ -106,7 +127,7 @@ window.globalData = {
             name: '第二届中国研究生“双碳”创新与创意大赛',
             award: '全国一等奖',
             date: '2023-10',
-            project: 'xxxxxxxxxxxxxxxxxxx',
+            project: '海洋先锋——油气管道安全保护与智能检测',
             students: ['王加慧','刘叙','闫愣愣','汪克林','柴志刚'],
             images: [
                 'images/competitions/comp-001-1.jpg',
@@ -205,10 +226,10 @@ window.globalData = {
     honors: [
         {
             id: 'honor-001',
-            title: '浙江省科学技术进步奖',
-            level: '省部级',
+            title: '第二届中国研究生“双碳”创新与创意大赛',
+            level: '国家级',
             year: 2023,
-            rank: '第一完成人',
+            rank: '优秀指导教师奖',
             certificate: 'downloads/honors/honor-001-cert.pdf'
         }
         // 添加更多荣誉...
@@ -411,20 +432,20 @@ function renderStudents(studentIds = null) {
                 <h4>${student.name}</h4>
                 <p class="meta">
                     ${student.level} | ${student.year} | ${student.status}<br>
-                    研究方向：${student.research}
+                    // 研究方向：${student.research}
                 </p>
-                ${student.achievements && student.achievements.length > 0 ? `
-                    <p><strong>主要成果：</strong></p>
-                    <ul class="achievement-list">
-                        ${student.achievements.map(a => `<li>${a}</li>`).join('')}
-                    </ul>
-                ` : ''}
-                ${student.status === '已毕业' && student.graduation ? `
-                    <p class="graduation-info">
-                        <strong>毕业论文：</strong>${student.graduation.thesis}<br>
-                        <strong>毕业去向：</strong>${student.graduation.destination}
-                    </p>
-                ` : ''}
+                // ${student.achievements && student.achievements.length > 0 ? `
+                //     <p><strong>主要成果：</strong></p>
+                //     <ul class="achievement-list">
+                //         ${student.achievements.map(a => `<li>${a}</li>`).join('')}
+                //     </ul>
+                // ` : ''}
+                // ${student.status === '已毕业' && student.graduation ? `
+                //     <p class="graduation-info">
+                //         <strong>毕业论文：</strong>${student.graduation.thesis}<br>
+                //         <strong>毕业去向：</strong>${student.graduation.destination}
+                //     </p>
+                // ` : ''}
             </div>
         </div>
     `).join('');
