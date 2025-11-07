@@ -23,16 +23,29 @@
 </section>
 
 <script>
+    console.log('🚀 competitions.html 的脚本开始加载');
+
     // 渲染竞赛列表（立即执行函数，适配 SPA 环境）
     (function renderCompetitions() {
+        console.log('🔄 renderCompetitions IIFE 已执行，设置 setTimeout...');
+
         // 使用 setTimeout 确保 DOM 已就绪
         setTimeout(function() {
+            console.log('⏰ setTimeout 回调触发（100ms 后）');
+
             try {
                 // 检查 globalData 是否存在
+                console.log('🔍 检查 globalData:', typeof globalData);
+                console.log('🔍 检查 globalData.competitions:', typeof globalData?.competitions);
+                console.log('🔍 competitions 数组长度:', globalData?.competitions?.length);
+
                 if (typeof globalData === 'undefined' || !globalData.competitions) {
                     console.error('❌ globalData 未加载或没有 competitions 数据');
-                    document.getElementById('competition-list').innerHTML =
-                        '<p class="empty-message">数据加载失败，请刷新页面重试</p>';
+                    const listEl = document.getElementById('competition-list');
+                    console.log('🔍 competition-list 元素:', listEl);
+                    if (listEl) {
+                        listEl.innerHTML = '<p class="empty-message">数据加载失败，请刷新页面重试</p>';
+                    }
                     return;
                 }
 
@@ -58,18 +71,31 @@
                     </div>
                 `).join('');
 
+                console.log('✅ HTML 生成完成，长度:', competitionHTML.length);
+
                 const listElement = document.getElementById('competition-list');
+                console.log('🔍 查找 competition-list 元素:', listElement);
+
                 if (listElement) {
                     listElement.innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
-                    console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录`);
+                    console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录到 DOM`);
+                } else {
+                    console.error('❌ 找不到 competition-list 元素！');
                 }
             } catch (error) {
                 console.error('❌ 渲染竞赛列表时出错:', error);
-                document.getElementById('competition-list').innerHTML =
-                    '<p class="empty-message">渲染失败，请查看控制台错误信息</p>';
+                console.error('错误堆栈:', error.stack);
+                const listEl = document.getElementById('competition-list');
+                if (listEl) {
+                    listEl.innerHTML = '<p class="empty-message">渲染失败：' + error.message + '</p>';
+                }
             }
         }, 100); // 延迟 100ms 确保 DOM 已插入
+
+        console.log('✅ setTimeout 已设置，将在 100ms 后执行');
     })();
+
+    console.log('✅ competitions.html 的脚本执行完成');
 </script>
 
 
