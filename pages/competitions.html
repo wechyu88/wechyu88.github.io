@@ -23,65 +23,53 @@
 </section>
 
 <script>
-    // 添加文件加载检查
-    console.log('开始加载全局数据文件...');
-</script>
+    // 渲染竞赛列表（立即执行函数，适配 SPA 环境）
+    (function renderCompetitions() {
+        // 使用 setTimeout 确保 DOM 已就绪
+        setTimeout(function() {
+            try {
+                // 检查 globalData 是否存在
+                if (typeof globalData === 'undefined' || !globalData.competitions) {
+                    console.error('❌ globalData 未加载或没有 competitions 数据');
+                    document.getElementById('competition-list').innerHTML =
+                        '<p class="empty-message">数据加载失败，请刷新页面重试</p>';
+                    return;
+                }
 
-<script src="../assets/js/global-data.js"></script>
+                console.log('✅ globalData 已加载，开始渲染竞赛列表');
+                const competitions = globalData.competitions;
 
-
-<script >
-/*     // 渲染竞赛列表
-
-    const competitions = globalData.competitions;
-    const competitionHTML = competitions.map(comp => `
-        <div class="competition-item">
-            <h3>${comp.name} - ${comp.award}</h3>
-            <p class="meta">
-                <strong>时间：</strong>${comp.date}<br>
-                <strong>项目：</strong>${comp.project}<br>
-                <strong>学生：</strong>${comp.students.join(', ')}
-            </p>
-            ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
-            ${comp.images && comp.images.length > 0 ? `
-                <div class="competition-gallery">
-                    ${comp.images.map(img => `
-                        <img src="${img}" alt="${comp.name}">
-                    `).join('')}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
-
-    document.getElementById('competition-list').innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
- */
-
-  window.onload = function() {
-    console.log(globalData); // 查看 globalData 是否正确加载    
-    const competitions = globalData.competitions; // 确保 globalData 已经加载
-        const competitionHTML = competitions.map(comp => `
-            <div class="competition-item">
-                <h3>${comp.name} - ${comp.award}</h3>
-                <p class="meta">
-                    <strong>时间：</strong>${comp.date}<br>
-                    <strong>项目：</strong>${comp.project}<br>
-                    <strong>学生：</strong>${comp.students.join(', ')}
-                </p>
-                ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
-                ${comp.images && comp.images.length > 0 ? `
-                    <div class="competition-gallery">
-                        ${comp.images.map(img => `
-                            <img src="${img}" alt="${comp.name}">
-                        `).join('')}
+                const competitionHTML = competitions.map(comp => `
+                    <div class="competition-item">
+                        <h3>${comp.name} - ${comp.award}</h3>
+                        <p class="meta">
+                            <strong>时间：</strong>${comp.date}<br>
+                            <strong>项目：</strong>${comp.project}<br>
+                            <strong>学生：</strong>${comp.students.join(', ')}
+                        </p>
+                        ${comp.description ? `<p class="description">${comp.description}</p>` : ''}
+                        ${comp.images && comp.images.length > 0 ? `
+                            <div class="competition-gallery">
+                                ${comp.images.map(img => `
+                                    <img src="${img}" alt="${comp.name}">
+                                `).join('')}
+                            </div>
+                        ` : ''}
                     </div>
-                ` : ''}
-            </div>
-        `).join('');
+                `).join('');
 
-        document.getElementById('competition-list').innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
-    };
-
-    
+                const listElement = document.getElementById('competition-list');
+                if (listElement) {
+                    listElement.innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
+                    console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录`);
+                }
+            } catch (error) {
+                console.error('❌ 渲染竞赛列表时出错:', error);
+                document.getElementById('competition-list').innerHTML =
+                    '<p class="empty-message">渲染失败，请查看控制台错误信息</p>';
+            }
+        }, 100); // 延迟 100ms 确保 DOM 已插入
+    })();
 </script>
 
 
