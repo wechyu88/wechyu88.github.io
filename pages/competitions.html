@@ -23,22 +23,46 @@
 </section>
 
 <script>
+    console.log('🚀 competitions.html 的脚本开始加载');
+
     // 渲染竞赛列表（立即执行函数，适配 SPA 环境）
     (function renderCompetitions() {
-        // 使用 setTimeout 确保 DOM 已就绪
-        setTimeout(function() {
+        console.log('🔄 renderCompetitions IIFE 已执行，准备渲染...');
+
+        let rendered = false; // 防止重复渲染
+
+        // 使用多重策略确保 DOM 已就绪
+        function attemptRender() {
+            if (rendered) {
+                console.log('⏭️ 已经渲染过，跳过');
+                return;
+            }
+
+            console.log('⏰ 尝试渲染竞赛列表...');
+
             try {
                 // 检查 globalData 是否存在
+                console.log('🔍 检查 globalData:', typeof globalData);
+                console.log('🔍 检查 globalData.competitions:', typeof globalData?.competitions);
+                console.log('🔍 competitions 数组长度:', globalData?.competitions?.length);
+
                 if (typeof globalData === 'undefined' || !globalData.competitions) {
-                    console.error('❌ globalData 未加载或没有 competitions 数据');
-                    document.getElementById('competition-list').innerHTML =
-                        '<p class="empty-message">数据加载失败，请刷新页面重试</p>';
-                    return;
+                    console.warn('⚠️ globalData 未就绪，等待下次尝试...');
+                    return; // 不设置 rendered = true，允许重试
                 }
 
                 console.log('✅ globalData 已加载，开始渲染竞赛列表');
                 const competitions = globalData.competitions;
 
+                const listElement = document.getElementById('competition-list');
+                console.log('🔍 查找 competition-list 元素:', listElement);
+
+                if (!listElement) {
+                    console.warn('⚠️ competition-list 元素未找到，等待下次尝试...');
+                    return; // 不设置 rendered = true，允许重试
+                }
+
+                // 生成 HTML
                 const competitionHTML = competitions.map(comp => `
                     <div class="competition-item">
                         <h3>${comp.name} - ${comp.award}</h3>
@@ -58,18 +82,45 @@
                     </div>
                 `).join('');
 
-                const listElement = document.getElementById('competition-list');
-                if (listElement) {
-                    listElement.innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
-                    console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录`);
-                }
+                console.log('✅ HTML 生成完成，长度:', competitionHTML.length);
+
+                // 渲染到 DOM
+                listElement.innerHTML = competitionHTML || '<p class="empty-message">暂无竞赛记录</p>';
+                rendered = true; // 标记已渲染，防止重复
+                console.log(`✅ 成功渲染 ${competitions.length} 条竞赛记录到 DOM`);
+
             } catch (error) {
                 console.error('❌ 渲染竞赛列表时出错:', error);
-                document.getElementById('competition-list').innerHTML =
-                    '<p class="empty-message">渲染失败，请查看控制台错误信息</p>';
+                console.error('错误堆栈:', error.stack);
+                const listEl = document.getElementById('competition-list');
+                if (listEl) {
+                    listEl.innerHTML = '<p class="empty-message">渲染失败：' + error.message + '</p>';
+                    rendered = true; // 即使出错也标记为已处理
+                }
             }
-        }, 100); // 延迟 100ms 确保 DOM 已插入
+        }
+
+        // 策略1：立即尝试（元素可能已经在 DOM 中）
+        attemptRender();
+
+        // 策略2：下一个事件循环再次尝试（通常会成功）
+        setTimeout(attemptRender, 0);
+
+        // 策略3：100ms 后再次尝试（兜底）
+        setTimeout(attemptRender, 100);
+
+        // 策略4：500ms 后最后尝试（终极兜底）
+        setTimeout(function() {
+            if (!rendered) {
+                console.log('🔄 500ms 后最后一次尝试渲染');
+                attemptRender();
+            }
+        }, 500);
+
+        console.log('✅ 多重渲染策略已设置');
     })();
+
+    console.log('✅ competitions.html 的脚本执行完成');
 </script>
 
 
