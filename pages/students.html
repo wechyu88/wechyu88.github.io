@@ -18,17 +18,30 @@
     </div>
 </section>
 
-<script>
-    // 渲染在读学生
-    const currentStudents = getStudentsByStatus('在读');
-    document.getElementById('current-students').innerHTML = 
-        renderStudents(currentStudents.map(s => s.id)) || '<p class="empty-message">暂无在读学生</p>';
+<script src="./assets/js/global-data.js"></script>
 
-    // 渲染已毕业学生
-    const graduatedStudents = getStudentsByStatus('已毕业');
-    document.getElementById('graduated-students').innerHTML = 
-        renderStudents(graduatedStudents.map(s => s.id)) || '<p class="empty-message">暂无已毕业学生</p>';
+<script>
+    // 等待页面加载完成
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查全局数据是否加载成功
+        if (typeof window.globalData === 'undefined') {
+            console.error('globalData 未加载');
+            return;
+        }
+
+        // 渲染在读学生
+        const currentStudents = getStudentsByStatus('在读');
+        document.getElementById('current-students').innerHTML = 
+            renderStudents(currentStudents.map(s => s.id)) || '<p class="empty-message">暂无在读学生</p>';
+
+        // 渲染已毕业学生
+        const graduatedStudents = getStudentsByStatus('已毕业');
+        document.getElementById('graduated-students').innerHTML = 
+            renderStudents(graduatedStudents.map(s => s.id)) || '<p class="empty-message">暂无已毕业学生</p>';
+    });
 </script>
+
+
 
 <style>
     .student-card {
