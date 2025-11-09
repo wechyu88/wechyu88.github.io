@@ -218,6 +218,34 @@ window.globalData = {
                 'images/competitions/comp-001-2.jpg'
             ],
             description: '指导学生团队设计并实现了智能导航系统...'
+        },
+        
+        {
+            id: 'competition-010',
+            name: 'Mathematical Contest In ModelingCertificate of Achievement',
+            award: 'Honorable Mention',
+            date: '2025',
+            project: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            students: ['Jialing Xu','Nuo Lin','Lele Jin'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
+        },
+        
+        {
+            id: 'competition-011',
+            name: 'Mathematical Contest In ModelingCertificate of Achievement',
+            award: 'Honorable Mention',
+            date: '2025',
+            project: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            students: ['Su Yan','Ruiyan Shi','Wei Chen'],
+            images: [
+                'images/competitions/comp-001-1.jpg',
+                'images/competitions/comp-001-2.jpg'
+            ],
+            description: '指导学生团队设计并实现了智能导航系统...'
         }
         // 添加更多竞赛...
     ],
