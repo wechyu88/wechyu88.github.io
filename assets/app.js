@@ -28,6 +28,17 @@
   function full() { return !!(window.HOMEPAGE && window.HOMEPAGE.full); }
   function localTag(x) { return x && x.localOnly ? '<span class="local-tag">仅本地</span>' : ''; }
 
+  // 文章（公开 + 本地时的私密文章）
+  function posts() { return window.HOMEPAGE && window.HOMEPAGE.posts ? window.HOMEPAGE.posts() : (window.POSTS_PUBLIC || []); }
+  function postUrl(p) { return 'blog.html#' + encodeURIComponent(p.slug); }
+  // 关联到某篇论文 / 项目 / 竞赛的科研记录链接
+  function related(field, id) {
+    if (!id) return '';
+    return posts().filter(function (p) { return p[field] === id; }).map(function (p) {
+      return '<span class="dot"></span><a class="vlog-link" href="' + postUrl(p) + '">科研记录：' + esc(p.title) + '</a>' + (p.private ? '<span class="local-tag">仅本地</span>' : '');
+    }).join('');
+  }
+
   function shown(list) {
     return (list || []).filter(function (x) { return x && !x.hide; });
   }
@@ -146,7 +157,7 @@
           if (p.url) extra.push(link(p.url, '链接'));
           return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
             '<p class="row-meta">' + esc(p.authors) + '</p>' +
-            '<p class="row-meta"><i>' + esc(p.venue) + '</i>' + (extra.length ? '<span class="dot"></span>' + extra.join('<span class="dot"></span>') : '') + '</p>';
+            '<p class="row-meta"><i>' + esc(p.venue) + '</i>' + (extra.length ? '<span class="dot"></span>' + extra.join('<span class="dot"></span>') : '') + related('paper', p.id) + '</p>';
         }
         var out = '';
         if (journals.length) out += '<h3 class="sub">期刊论文 <span class="count">' + journals.length + '</span></h3>' + yearRows(journals, paper);
@@ -178,7 +189,7 @@
         var row = function (p) {
           var meta = [p.source, p.number, p.role, p.status].filter(Boolean).map(esc).join('<span class="dot"></span>');
           return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
-            (meta ? '<p class="row-meta">' + meta + '</p>' : '') +
+            (meta || related('project', p.id) ? '<p class="row-meta">' + meta + related('project', p.id) + '</p>' : '') +
             (full() && (p.budget || p.note || (p.files || []).length) ? '<div class="private-box">' +
               (p.budget ? '<p class="row-meta">经费：' + esc(p.budget) + '</p>' : '') +
               (p.note ? '<p class="row-meta">备注：' + esc(p.note) + '</p>' : '') +
@@ -250,7 +261,9 @@
         if (!list.length) return '';
         var pub = list.filter(function (c) { return !c.localOnly; }).length;
         return '<p class="lead">指导学生获奖 <strong>' + pub + '</strong> 项</p>' + yearRows(list, function (c) {
-          var head = '<p class="row-title">' + esc(c.name) + '<span class="award">' + esc(c.award) + '</span>' + localTag(c) + '</p>';
+          var rel = related('competition', c.id);
+          var head = '<p class="row-title">' + esc(c.name) + '<span class="award">' + esc(c.award) + '</span>' + localTag(c) + '</p>' +
+            (rel ? '<p class="row-meta">' + rel.replace('<span class="dot"></span>', '') + '</p>' : '');
           if (!full()) return head;   // 公开版只显示比赛名称和奖项
           var photos = (c.photos || []).filter(Boolean);
           var files = (c.files || []).filter(Boolean);
@@ -280,6 +293,24 @@
           return '<p class="row-title">' + esc(h.title) + localTag(h) + '</p>' +
             '<p class="row-meta">' + esc(h.level || '') + (h.file ? '<span class="dot"></span>' + link(h.file, '证书') : '') + '</p>';
         });
+      }
+    },
+
+    posts: {
+      zh: '随笔', en: 'Journal',
+      html: function () {
+        var list = posts();
+        if (!list.length) return '';
+        var n = S.postsCount || 4;
+        return '<div class="post-cards">' + list.slice(0, n).map(function (p) {
+          return '<a class="post-card" href="' + postUrl(p) + '">' +
+            (p.cover ? '<span class="post-card-img">' + img(p.cover, p.title) + '</span>' : '') +
+            '<span class="post-card-meta">' + esc(p.category || '') + '<span class="dot"></span>' + esc(String(p.date).replace(/-/g, '.')) +
+            (p.private ? '<span class="local-tag">仅本地</span>' : '') + '</span>' +
+            '<span class="post-card-title">' + esc(p.title) + '</span>' +
+            (p.summary ? '<span class="post-card-sum">' + esc(p.summary) + '</span>' : '') + '</a>';
+        }).join('') + '</div>' +
+        '<p class="post-more"><a href="blog.html">全部 ' + list.length + ' 篇 →</a></p>';
       }
     },
 

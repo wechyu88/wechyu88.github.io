@@ -7,6 +7,8 @@ index.html        页面骨架（一般不用改）
 content.js        ★ 公开内容：简介、项目、论文、专利、学生姓名、竞赛名称与奖项……
 photos/ files/    公开的照片和附件
 cv.html           简历 / 时间线导出页（只在本地可用）
+blog.html         随笔 / Vlog（公开文章在 posts/，私密文章在 private/posts/）
+worklog.html      工作日志（只在本地可用）
 assets/           样式和脚本（改配色看 assets/style.css 顶部）
 
 private/          ★ 私密记录，只在你自己电脑上，不会上传到这个公开仓库
@@ -125,6 +127,27 @@ private/          ★ 私密记录，只在你自己电脑上，不会上传到�
 
 指导教师排名填了的话，会自动写进简历，例如“（第二指导教师）”。
 
+### 写随笔 / Vlog
+
+每篇文章是一个文件夹，照片、视频和文字放在一起：
+
+```
+posts/2026-10-11-岱山海试/          ← 公开文章（出现在主页「随笔」和 blog.html）
+    index.md                         文字
+    cover.jpg  a.jpg  clip.mp4       照片、小视频
+private/posts/2026-10-12-组会记录/  ← 私密文章（只在自己电脑上看到）
+```
+
+1. 复制 `posts/_模板` 文件夹，改名为「日期-标题」，照着模板里的说明写 `index.md`
+2. 双击网站文件夹里的 **更新文章**（Windows 用 `.bat`，Mac 用 `.command`），或运行 `node tools/build-posts.js`
+3. 双击 `index.html` 预览，没问题就在 GitHub Desktop 里提交、推送
+
+- 公开 ↔ 私密：把整个文章文件夹在 `posts/` 和 `private/posts/` 之间移动，再运行一次「更新文章」
+- 科研记录关联论文：文章开头写 `paper: paper-001`（或 `project: proj-001`、`competition: comp-003`），
+  主页对应的论文 / 项目 / 竞赛下面会出现「科研记录」链接，文章里也会显示关联卡片
+- 大视频（超过 50 MB）先传 B 站，在正文里单独一行贴视频网址，会自动变成播放器
+- 忘了运行「更新文章」时，新文章不会出现在网页上
+
 ### 工作日志（只在本地）
 
 把你在这台电脑上和 **Claude Code**、**Codex** 的对话，自动整理成按天的工作日志：
@@ -137,9 +160,13 @@ node tools/worklog-sync.js            # 先整理一次现有记录
 node tools/worklog-sync.js --install  # 以后自动更新
 ```
 
+工作日志有两个视图：**总览**（按项目拼贴：工作量、进展要点、问题追踪、节奏、工作时段，点项目块可展开）和 **按日浏览**（日历 + 每天详情）。
+项目按对话所在的文件夹区分；想起中文名或把几个文件夹合成一个项目，在 `private/worklog/config.json` 的 `names` 里写：
+`"names": { "underwater-detect": "水下目标检测", "uw-paper": "水下目标检测" }`
+
 之后 Claude Code 每次回复完、Codex 每轮结束时都会自动更新。本地打开主页，点页脚的「工作日志」即可查看。
 
-- 想让 Claude 给每天写一段中文小结：`node tools/worklog-sync.js --summarize`（会消耗少量额度，只写已结束的日子）
+- 想让 Claude 写每日小结、总览里的项目要点和问题追踪：`node tools/worklog-sync.js --summarize`（会消耗少量额度）
 - 不想记录某些项目：在 `private/worklog/config.json` 的 `exclude` 里写项目文件夹名
 - 取消自动更新：`node tools/worklog-sync.js --uninstall`
 

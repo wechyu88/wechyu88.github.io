@@ -75,24 +75,37 @@
     });
   }
 
+  function loadScript(src, done) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = function () { done(true); };
+    s.onerror = function () { done(false); };
+    document.head.appendChild(s);
+  }
+
   H.ready = function (cb) {
     var S = window.SITE || {};
     if (!LOCAL) { cb(); return; }
-    var s = document.createElement('script');
-    s.src = 'private/details.js';
-    s.onload = function () {
-      var D = window.PRIVATE || {};
-      H.full = true;
-      check(S, D);   // 先检查公开文件本身，再合并
-      merge(S, D);
-      cb();
-    };
-    s.onerror = function () {
-      check(S, null);
-      H.warnings.unshift({ level: 'todo', text: '没有找到 private/details.js，当前显示的是公开版。' });
-      cb();
-    };
-    document.head.appendChild(s);
+    loadScript('private/details.js', function (ok) {
+      if (ok) {
+        var D = window.PRIVATE || {};
+        H.full = true;
+        check(S, D);   // 先检查公开文件本身，再合并
+        merge(S, D);
+      } else {
+        check(S, null);
+        H.warnings.unshift({ level: 'todo', text: '没有找到 private/details.js，当前显示的是公开版。' });
+      }
+      // 私密文章（没有也没关系）
+      loadScript('private/posts/index.js', function () { cb(); });
+    });
+  };
+
+  // 文章：公开的 + 本地时再加上私密的，按日期从新到旧
+  H.posts = function () {
+    var list = (window.POSTS_PUBLIC || []).slice();
+    if (LOCAL) list = list.concat(window.POSTS_PRIVATE || []);
+    return list.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
   };
 
   // 本地提示条

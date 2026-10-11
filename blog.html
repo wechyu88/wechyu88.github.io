@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>随笔 · 温程远</title>
+  <meta name="description" content="温程远的生活与科研随笔、Vlog。">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/blog.css">
+</head>
+<body>
+  <header class="bl-bar">
+    <div class="bl-bar-inner">
+      <a class="bl-home" href="./" id="bl-home">温程远</a>
+      <nav class="bl-nav" aria-label="分类" id="bl-nav"></nav>
+    </div>
+  </header>
+
+  <main class="bl-main" id="bl-main"></main>
+
+  <dialog class="viewer" id="viewer">
+    <form method="dialog"><button class="viewer-close" aria-label="关闭">关闭</button></form>
+    <img id="viewer-img" alt="">
+    <p id="viewer-cap"></p>
+  </dialog>
+
+  <!-- 文章由 tools/build-posts.js 生成；私密文章只在本机加载 -->
+  <script src="content.js"></script>
+  <script src="posts/index.js"></script>
+  <script src="assets/local.js"></script>
+  <script src="assets/blog.js"></script>
+</body>
+</html>

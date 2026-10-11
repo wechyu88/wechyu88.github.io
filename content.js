@@ -63,6 +63,7 @@ window.SITE = {
     'students',      // 学生
     'competitions',  // 竞赛指导
     'honors',        // 荣誉
+    'posts',         // 随笔 / Vlog（文章写在 posts/ 文件夹里）
     'gallery',       // 相册
     'contact',       // 联系
   ],
@@ -132,6 +133,7 @@ window.SITE = {
   papers: [
     // 下面两条是旧网站的示例，填写真实论文后删除即可
     {
+      id: 'paper-001',   // 科研记录（文章）里写 paper: paper-001 就能关联到这篇论文
       type: 'journal',
       title: '基于深度学习的图像识别方法研究',
       authors: '温程远, 张三, 李四',
@@ -143,6 +145,7 @@ window.SITE = {
       hide: true,
     },
     {
+      id: 'paper-002',
       type: 'conference',
       title: '机器人视觉定位系统设计与实现',
       authors: '温程远, 王五',

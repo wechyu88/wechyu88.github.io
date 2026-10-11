@@ -212,7 +212,7 @@ function collect() {
 }
 
 function loadConfig() {
-  return readJSON(path.join(OUT_DIR, 'config.json'), { exclude: [] });
+  return readJSON(path.join(OUT_DIR, 'config.json'), { exclude: [], names: {} });
 }
 
 function buildMachineFile(sessions) {
@@ -232,7 +232,8 @@ function buildMachineFile(sessions) {
 
 function rebuildData() {
   // 合并所有电脑的记录（每台电脑一个 <电脑名>.json，方便多台电脑通过私有仓库同步）
-  const files = fs.readdirSync(OUT_DIR).filter(f => f.endsWith('.json') && !f.startsWith('.') && f !== 'config.json' && f !== 'summaries.json');
+  const NOT_MACHINE = ['config.json', 'summaries.json', 'insights.json'];
+  const files = fs.readdirSync(OUT_DIR).filter(f => f.endsWith('.json') && !f.startsWith('.') && NOT_MACHINE.indexOf(f) < 0);
   const days = {};
   let updated = '';
   for (const f of files) {
@@ -251,7 +252,11 @@ function rebuildData() {
     sessions: days[date].sort((a, b) => a.start.localeCompare(b.start))
   }));
   const js = '/* 自动生成，请勿手动修改：node tools/worklog-sync.js */\n' +
-    'window.WORKLOG = ' + JSON.stringify({ updated, days: list }) + ';\n';
+    'window.WORKLOG = ' + JSON.stringify({
+      updated, days: list,
+      names: loadConfig().names || {},                                  // 文件夹 → 项目显示名
+      insights: readJSON(path.join(OUT_DIR, 'insights.json'), null)     // AI 整理的项目要点与问题
+    }) + ';\n';
   writeFileSafe(path.join(OUT_DIR, 'data.js'), js);
   return list;
 }
@@ -270,8 +275,9 @@ function summarize(list) {
     ).join('\n\n');
     const prompt = SUMMARY_MARK + ' 下面是我某一天与 AI 编程助手的工作记录。请用中文写一段工作日志小结（3-6 条要点，' +
       '每条一句，说明做了什么、结果如何；不要寒暄、不要标题）。\n\n日期：' + day.date + '\n\n' + digest.slice(0, 12000);
-    const r = spawnSync('claude', ['-p', prompt], {
-      encoding: 'utf8', timeout: 180000, shell: process.platform === 'win32',
+    // 提示词从标准输入传入，避免 Windows 命令行对长文本、换行和引号的转义问题
+    const r = spawnSync('claude', ['-p'], {
+      input: prompt, encoding: 'utf8', timeout: 180000, shell: process.platform === 'win32',
       env: Object.assign({}, process.env, { WORKLOG_SYNC_RUNNING: '1' })
     });
     if (r.status === 0 && r.stdout && r.stdout.trim()) {
@@ -283,6 +289,38 @@ function summarize(list) {
       break;
     }
   }
+}
+
+// ---------- 可选：用 Claude 整理总览面板的「项目要点」和「问题追踪」 ----------
+function runClaude(prompt) {
+  const r = spawnSync('claude', ['-p'], {
+    input: prompt, encoding: 'utf8', timeout: 240000, shell: process.platform === 'win32',
+    env: Object.assign({}, process.env, { WORKLOG_SYNC_RUNNING: '1' })
+  });
+  return r.status === 0 ? String(r.stdout || '') : '';
+}
+function insights(list) {
+  const names = loadConfig().names || {};
+  const since = localDate(new Date(Date.now() - 30 * 864e5));
+  const byProject = {};
+  list.filter(d => d.date >= since).forEach(d => d.sessions.forEach(s => {
+    const name = names[s.project] || s.project;
+    (byProject[name] = byProject[name] || []).push(d.date.slice(5) + ' ' + s.prompts.map(p => p.text.replace(/\s+/g, ' ').slice(0, 160)).join(' | '));
+  }));
+  const keys = Object.keys(byProject);
+  if (!keys.length) return;
+  const digest = keys.map(k => '## ' + k + '\n' + byProject[k].slice(-25).join('\n')).join('\n\n').slice(0, 16000);
+  const prompt = SUMMARY_MARK + ' 下面是我最近 30 天按项目整理的、与 AI 编程助手的对话请求。请只输出一个 JSON，不要其他文字，格式：\n' +
+    '{"projects": {"项目名": ["要点1", "要点2", "要点3"]}, "issues": [{"status": "open 或 done", "text": "问题一句话", "project": "项目名", "date": "MM.DD"}]}\n' +
+    '要点：每个项目 2-3 条中文短句，说明做成了什么（可带关键数字）。issues：最多 8 条，只收具体的报错、卡住的问题或待办，根据后续对话判断是否已解决。项目名必须与 ## 后的名字一致。\n\n' + digest;
+  const out = runClaude(prompt);
+  const m = out.match(/\{[\s\S]*\}/);
+  let data = null;
+  try { data = m && JSON.parse(m[0]); } catch (e) { data = null; }
+  if (!data || typeof data !== 'object') { console.log('项目要点生成失败，可稍后再试。'); return; }
+  data.generated = new Date().toISOString();
+  writeFileSafe(path.join(OUT_DIR, 'insights.json'), JSON.stringify(data, null, 2));
+  console.log('已更新总览面板的项目要点与问题追踪。');
 }
 
 // ---------- 安装 / 卸载自动同步 ----------
@@ -343,7 +381,7 @@ function main() {
   const sessions = collect();
   writeFileSafe(path.join(OUT_DIR, MACHINE + '.json'), JSON.stringify(buildMachineFile(sessions)));
   let list = rebuildData();
-  if (args.includes('--summarize')) { summarize(list); list = rebuildData(); }
+  if (args.includes('--summarize')) { summarize(list); insights(list); list = rebuildData(); }
   if (process.stdout.isTTY) console.log('工作日志已更新：' + list.length + ' 天，' + sessions.length + ' 段对话。');
 }
 
