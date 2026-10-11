@@ -75,14 +75,15 @@ window.SITE = {
   // ------------------------------------------------------------------
   education: [
     // 请填写真实信息后删除 hide: true
-    { years: '2015 – 2019', degree: '博士', major: '计算机科学与技术', school: '某某大学', hide: true },
-    { years: '2013 – 2015', degree: '硕士', major: '计算机应用技术',   school: '某某大学', hide: true },
-    { years: '2009 – 2013', degree: '学士', major: '计算机科学与技术', school: '某某大学', hide: true },
+    { years: '2015 – 2019', degree: '硕士', major: '计算机科学与技术', school: 'Virginia Tech', hide: false },
+    { years: '2012 – 2019', degree: '博士', major: '物理学',   school: 'Virginia Tech', hide: false },
+    { years: '2007 – 2011', degree: '学士', major: '物理学', school: '吉林大学', hide: false },
   ],
 
   work: [
-    { years: '2019 – 2025', position: '讲师', place: '浙江海洋大学 信息工程学院' },
-    { years: '2026 – 至今', position: '副教授', place: '浙江海洋大学 信息工程学院' },
+    { years: '2021.4 – 2022.8', position: '游戏研发工程师', place: '网易（杭州）燕云十六声工作室' },
+    { years: '2022.9 – 2025.12', position: '讲师', place: '浙江海洋大学 信息工程学院' },
+    { years: '2026.1 – 至今', position: '副教授', place: '浙江海洋大学 信息工程学院' },
   ],
 
   // ------------------------------------------------------------------
