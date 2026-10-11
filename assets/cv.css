@@ -1,0 +1,71 @@
+/* 简历 / 时间线页面：屏幕上是一张 A4 纸，打印时只输出纸面 */
+
+body { background: var(--line); }
+
+.cv-bar {
+  position: sticky; top: 0; z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.cv-bar-inner {
+  max-width: 210mm; margin: 0 auto; padding: 12px 16px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+}
+.cv-back { border: 0; font-size: 15px; color: var(--ink-2); }
+.cv-tabs { display: flex; gap: 4px; }
+.cv-tabs button, .cv-actions button {
+  font-size: 15px; padding: 6px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.cv-tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.cv-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.cv-actions button:hover, .cv-tabs button:hover { border-color: var(--ink); }
+.cv-actions button:focus-visible, .cv-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 纸面固定用浅色，打印和导出时一致 */
+.paper {
+  --p-ink: #141311; --p-ink-2: #3a372f; --p-line: #cfc9bd; --p-accent: #7a5a3a;
+  box-sizing: border-box;
+  width: 210mm; max-width: calc(100% - 32px);
+  min-height: 297mm;
+  margin: 32px auto 64px;
+  padding: 22mm 20mm;
+  background: #fff; color: var(--p-ink);
+  font-family: var(--sans); font-size: 10.5pt; line-height: 1.7;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.paper h1 { font-family: var(--serif); font-size: 24pt; font-weight: 700; letter-spacing: .06em; line-height: 1.2; }
+.paper .cv-en { margin-top: 4px; font-size: 10pt; letter-spacing: .12em; text-transform: uppercase; color: var(--p-ink-2); }
+.paper .cv-contact { margin-top: 10px; color: var(--p-ink-2); font-size: 10pt; }
+.paper .cv-contact .sep { color: var(--p-line); }
+.paper h2 {
+  margin: 22px 0 8px; padding-bottom: 4px;
+  font-family: var(--serif); font-size: 13pt; font-weight: 700; letter-spacing: .08em;
+  border-bottom: 1.2pt solid var(--p-ink);
+}
+.paper h3 { margin: 12px 0 4px; font-size: 10.5pt; font-weight: 700; color: var(--p-ink-2); }
+.paper ol, .paper ul { margin: 0; padding-left: 1.6em; }
+.paper li { margin: 3px 0; }
+.paper .item { margin: 4px 0; display: grid; grid-template-columns: 7.2em minmax(0, 1fr); column-gap: 1em; }
+.paper .item-date { color: var(--p-ink-2); font-variant-numeric: tabular-nums; }
+.paper .muted { color: var(--p-ink-2); }
+.paper .tag { color: var(--p-accent); font-weight: 600; }
+.paper .year { margin: 18px 0 4px; font-family: var(--serif); font-size: 14pt; font-weight: 700; }
+.paper .cat { display: inline-block; min-width: 4.5em; color: var(--p-accent); font-weight: 600; }
+.paper .stamp { margin-top: 28px; font-size: 9pt; color: var(--p-ink-2); text-align: right; }
+
+@media (max-width: 760px) {
+  .paper { padding: 24px 18px; min-height: 0; margin-top: 16px; }
+  .paper .item { grid-template-columns: 1fr; }
+}
+
+@page { size: A4; margin: 16mm 16mm; }
+@media print {
+  body { background: #fff; }
+  .cv-bar { display: none; }
+  .paper { width: auto; max-width: none; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+  .paper h2 { break-after: avoid; }
+  .paper .item, .paper li { break-inside: avoid; }
+}
+.cv-opt { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--ink-2); cursor: pointer; }
+.cv-opt input { width: 16px; height: 16px; accent-color: var(--accent); }
+.cv-opt[hidden] { display: none; }

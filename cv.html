@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学术简历</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/cv.css">
+</head>
+<body>
+  <div class="cv-bar">
+    <div class="cv-bar-inner">
+      <a class="cv-back" href="./">← 返回主页</a>
+      <div class="cv-tabs" role="tablist">
+        <button id="tab-cv" role="tab" data-mode="cv">简历</button>
+        <button id="tab-timeline" role="tab" data-mode="timeline">时间线</button>
+      </div>
+      <label class="cv-opt"><input type="checkbox" id="opt-detail"> 含作品与学生</label>
+      <div class="cv-actions">
+        <button id="btn-print">打印 / 存为 PDF</button>
+        <button id="btn-word">下载 Word</button>
+        <button id="btn-md">下载 Markdown</button>
+      </div>
+    </div>
+  </div>
+
+  <article class="paper" id="paper"></article>
+
+  <!-- 内容来自 content.js，与主页同步 -->
+  <script src="content.js"></script>
+  <script src="assets/local.js"></script>
+  <script src="assets/cv.js"></script>
+</body>
+</html>

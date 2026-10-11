@@ -1,0 +1,4 @@
+# Cloudflare Pages 会读取此文件；GitHub Pages 等其它平台会忽略它，不影响使用。
+# content.js 不缓存，保证改完内容后访问者马上看到新版本。
+/content.js
+  Cache-Control: no-cache
