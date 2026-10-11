@@ -49,7 +49,7 @@ window.SITE = {
   },
 
   // 页面风格：'warm' 暖木（默认）/ 'white' 白墙 / 'stone' 石灰
-  theme: 'warm',
+  theme: 'stone',
 
   // 页面上显示哪些栏目、按什么顺序。不想要哪个就删掉/注释掉那一行
   sections: [

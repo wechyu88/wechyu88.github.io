@@ -99,6 +99,11 @@ private/          ★ 私密记录，只在你自己电脑上，不会上传到�
 
 找到 `papers` / `patents` / `honors`，复制一条改内容。PDF 放进 `files/`，填 `pdf: 'files/xxx.pdf'`。
 
+### 换风格
+
+`content.js` 顶部的 `theme`：`'stone'` 石灰（当前）/ `'warm'` 暖木 / `'white'` 白墙。
+想微调颜色，改对应的 `assets/theme-stone.css` 顶部 `:root` 里的几个颜色值。
+
 ### 隐藏某一条、某一栏
 
 - 某一条暂时不显示：在条目里加 `hide: true`（注意：原文仍在公开仓库里）
