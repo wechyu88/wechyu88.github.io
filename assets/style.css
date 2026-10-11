@@ -132,6 +132,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .rows .row:not(.row-first):not(:first-child) { border-top-style: dashed; }
 .row-date { font-size: 15px; color: var(--ink-3); font-variant-numeric: tabular-nums; letter-spacing: .04em; padding-top: 2px; }
 .row-date-wide { white-space: nowrap; }
+/* 起止年月较长（如 2022.9 – 2025.12）的列表：日期列加宽 */
+.row-wide { grid-template-columns: 10em minmax(0, 1fr); }
 .row-body { min-width: 0; }
 .row-title { font-size: 18px; line-height: 1.7; font-weight: 500; }
 .row-plain { color: var(--ink); }
@@ -232,6 +234,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
   .row { grid-template-columns: 60px minmax(0, 1fr); column-gap: 16px; }
   .row-date-wide { white-space: normal; }
+  .row-wide { grid-template-columns: 76px minmax(0, 1fr); }
   .card { padding: 26px 22px 28px; }
   .plain-list li { grid-template-columns: auto 1fr; }
   .pl-note { grid-column: 1 / -1; text-align: left; }

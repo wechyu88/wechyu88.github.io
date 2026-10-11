@@ -127,7 +127,7 @@
           '</div>' : '');
     };
     return '<ol class="rows">' + list.map(function (p) {
-      return '<li class="row"><span class="row-date row-date-wide">' + esc(p.years || year(p.date)) + '</span><div class="row-body">' + row(p) + '</div></li>';
+      return '<li class="row row-wide"><span class="row-date row-date-wide">' + esc(p.years || year(p.date)) + '</span><div class="row-body">' + row(p) + '</div></li>';
     }).join('') + '</ol>';
   }
 
@@ -149,7 +149,7 @@
         shown(S.projects).forEach(function (p) {
           items.push({ date: p.date || p.years, text: '项目立项：' + esc(p.title) + (p.source ? '（' + esc(p.source) + '）' : '') });
         });
-        shown(S.papers).forEach(function (p) {
+        shown(S.papers).filter(isLead).forEach(function (p) {   // 只发布本人第一 / 通信 / 共同第一作者的论文
           items.push({ date: p.date, text: '论文发表：' + esc(p.title) + (p.venue ? '，<i>' + esc(p.venue) + '</i>' : '') });
         });
         items.sort(byDateDesc);
@@ -168,7 +168,7 @@
         function block(title, list, line) {
           if (!list.length) return '';
           return '<h3 class="sub">' + title + '</h3><ol class="rows">' + list.map(function (x) {
-            return '<li class="row"><span class="row-date row-date-wide">' + esc(x.years) + '</span><div class="row-body">' + line(x) + '</div></li>';
+            return '<li class="row row-wide"><span class="row-date row-date-wide">' + esc(x.years) + '</span><div class="row-body">' + line(x) + '</div></li>';
           }).join('') + '</ol>';
         }
         out += block('工作', work, function (w) {
