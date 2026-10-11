@@ -57,6 +57,32 @@
   }
   function byDateDesc(a, b) { return dateKey(b.date) - dateKey(a.date); }
 
+  // 论文类型（content.js 里 papers 的 type）；期刊不加标签，其他类型在条目后标注
+  var PAPER_TAGS = { conference: '会议论文', abstract: '会议摘要', thesis: '学位论文', preprint: '预印本' };
+  // 论文级别：数字越小越靠前（CCF A ≈ 中科院 1区 Top；中科院分区 cas 只在本地版有）
+  var paperRank = function (p) {
+    var s = (p.cas || '') + ' ' + (p.level || ''), r = 9, m = s.match(/中科院\s*(\d)\s*区/);
+    if (m) r = +m[1] + (/Top/i.test(s) ? 0 : 0.2);
+    if (/CCF\s*A/i.test(s)) r = Math.min(r, 1);
+    if (/CCF\s*B/i.test(s)) r = Math.min(r, 1.5);
+    if (/CCF\s*C/i.test(s)) r = Math.min(r, 2.5);
+    return r;
+  };
+  function byRankThenDate(a, b) { return (paperRank(a) - paperRank(b)) || byDateDesc(a, b); }
+
+  // 本人署名：第一作者、通信作者（名字后加 *）、共同第一作者（名字后加 #）
+  function myNames() { return [P.name, P.nameEn].filter(Boolean); }
+  function isMine(a) { return myNames().indexOf(a.replace(/[*#†\s]+$/, '').trim()) >= 0; }
+  function isLead(p) {
+    var list = String(p.authors || '').split(/[,，、;；]/).map(function (a) { return a.trim(); }).filter(Boolean);
+    return list.some(function (a, i) { return isMine(a) && (i === 0 || /[*#]/.test(a)); });
+  }
+  function authorsHtml(s) {
+    return String(s || '').split(/([,，、;；]\s*)/).map(function (a) {
+      return isMine(a) ? '<strong>' + esc(a) + '</strong>' : esc(a);
+    }).join('');
+  }
+
   function link(url, text) {
     return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(text) + '</a>';
   }
@@ -64,6 +90,14 @@
   function img(src, alt, cls) {
     return '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy" decoding="async"' +
       (cls ? ' class="' + cls + '"' : '') + '>';
+  }
+
+  // 每行都标年份的列表（不按时间排序时用）
+  function datedRows(items, item) {
+    return '<ol class="rows">' + items.map(function (x) {
+      return '<li class="row row-first"><span class="row-date">' + esc(year(x.date)) +
+        '</span><div class="row-body">' + item(x) + '</div></li>';
+    }).join('') + '</ol>';
   }
 
   // 按年份分组的列表；item(x) 返回该行右侧 HTML
@@ -75,6 +109,25 @@
       last = y;
       return '<li class="row' + (label ? ' row-first' : '') + '"><span class="row-date">' + esc(label) +
         '</span><div class="row-body">' + item(x) + '</div></li>';
+    }).join('') + '</ol>';
+  }
+
+  // 科研项目 / 学生项目共用：按开始年份排序（years: '2021 – 2024' 取第一个年份）
+  function projectRows(items) {
+    var list = shown(items).map(function (p) { p.date = p.date || p.years; return p; }).sort(byDateDesc);
+    if (!list.length) return '';
+    var row = function (p) {
+      var meta = [p.source, p.number, p.role, p.status].filter(Boolean).map(esc).join('<span class="dot"></span>');
+      return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
+        (meta || related('project', p.id) ? '<p class="row-meta">' + meta + related('project', p.id) + '</p>' : '') +
+        (full() && (p.budget || p.note || (p.files || []).length) ? '<div class="private-box">' +
+          (p.budget ? '<p class="row-meta">经费：' + esc(p.budget) + '</p>' : '') +
+          (p.note ? '<p class="row-meta">备注：' + esc(p.note) + '</p>' : '') +
+          ((p.files || []).length ? '<p class="row-meta">材料：' + p.files.map(function (f) { return link(f, f.split('/').pop()); }).join('<span class="dot"></span>') + '</p>' : '') +
+          '</div>' : '');
+    };
+    return '<ol class="rows">' + list.map(function (p) {
+      return '<li class="row"><span class="row-date row-date-wide">' + esc(p.years || year(p.date)) + '</span><div class="row-body">' + row(p) + '</div></li>';
     }).join('') + '</ol>';
   }
 
@@ -90,7 +143,7 @@
         shown(S.honors).forEach(function (h) {
           items.push({ date: h.date, text: '获' + esc(h.title) });
         });
-        shown(S.patents).forEach(function (p) {
+        shown(S.patentList).forEach(function (p) {   // 只在本地版有
           items.push({ date: p.date, text: '发明专利授权：' + esc(p.title) });
         });
         shown(S.projects).forEach(function (p) {
@@ -146,59 +199,68 @@
     papers: {
       zh: '论文', en: 'Publications',
       html: function () {
-        var papers = shown(S.papers).sort(byDateDesc);
-        var journals = papers.filter(function (p) { return p.type !== 'conference'; });
-        var confs = papers.filter(function (p) { return p.type === 'conference'; });
+        var papers = shown(S.papers);
         function paper(p) {
           var extra = [];
+          if (PAPER_TAGS[p.type]) extra.push(PAPER_TAGS[p.type]);
           if (p.level) extra.push(esc(p.level));
+          if (full() && p.cas) extra.push(esc(p.cas) + '<span class="local-tag">仅本地</span>');
           if (p.doi) extra.push(link('https://doi.org/' + p.doi, 'DOI'));
           if (p.pdf) extra.push(link(p.pdf, 'PDF'));
           if (p.url) extra.push(link(p.url, '链接'));
           return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
-            '<p class="row-meta">' + esc(p.authors) + '</p>' +
+            '<p class="row-meta">' + authorsHtml(p.authors) + '</p>' +
             '<p class="row-meta"><i>' + esc(p.venue) + '</i>' + (extra.length ? '<span class="dot"></span>' + extra.join('<span class="dot"></span>') : '') + related('paper', p.id) + '</p>';
         }
-        var out = '';
-        if (journals.length) out += '<h3 class="sub">期刊论文 <span class="count">' + journals.length + '</span></h3>' + yearRows(journals, paper);
-        if (confs.length) out += '<h3 class="sub">会议论文 <span class="count">' + confs.length + '</span></h3>' + yearRows(confs, paper);
-        return out;
+        // 期刊、会议混排：本人第一 / 通信 / 共同第一作者在前，其余在后；各自再按级别、时间排序
+        if (!papers.length) return '';
+        var lead = papers.filter(isLead).sort(byRankThenDate);
+        var other = papers.filter(function (p) { return !isLead(p); }).sort(byRankThenDate);
+        var both = lead.length && other.length;
+        return '<p class="paper-legend">共 ' + papers.length + ' 篇；加粗为本人，* 通信作者，# 共同第一作者</p>' +
+          (lead.length ? (both ? '<h3 class="sub">第一作者 / 通信作者 / 共同第一作者 <span class="count">' + lead.length + '</span></h3>' : '') + datedRows(lead, paper) : '') +
+          (other.length ? (both ? '<h3 class="sub">合作论文 <span class="count">' + other.length + '</span></h3>' : '') + datedRows(other, paper) : '');
       }
     },
 
     patents: {
       zh: '专利', en: 'Patents',
       html: function () {
-        var list = shown(S.patents).sort(byDateDesc);
-        if (!list.length) return '';
-        return yearRows(list, function (p) {
-          return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
-            '<p class="row-meta">' + esc(p.inventors) + '</p>' +
+        // 公开版只显示数量；本地版再列出 private/details.js 里的清单
+        var list = shown(S.patentList).sort(byDateDesc);
+        var n = full() && list.length ? list.length : (S.patentCount || 0);
+        if (!n) return '';
+        return '<p class="lead">已授权发明专利 <strong>' + n + '</strong> 项</p>' + (full() && list.length ? yearRows(list, function (p) {
+          return '<p class="row-title">' + esc(p.title) + '<span class="local-tag">仅本地</span></p>' +
+            '<p class="row-meta">' + authorsHtml(p.inventors) + '</p>' +
             '<p class="row-meta">' + esc(p.number) + '<span class="dot"></span>' + esc(p.status) +
             (p.file ? '<span class="dot"></span>' + link(p.file, '证书') : '') + '</p>';
-        });
+        }) : '');
       }
     },
 
     projects: {
       zh: '科研项目', en: 'Projects',
+      html: function () { return projectRows(S.projects); }
+    },
+
+    studentProjects: {
+      zh: '学生项目', en: 'Student Projects',
+      html: function () { return projectRows(S.studentProjects); }
+    },
+
+    software: {
+      zh: '软件著作权', en: 'Software',
       html: function () {
-        // 按开始年份排序（years: '2021 – 2024' 取第一个年份）
-        var list = shown(S.projects).map(function (p) { p.date = p.date || p.years; return p; }).sort(byDateDesc);
-        if (!list.length) return '';
-        var row = function (p) {
-          var meta = [p.source, p.number, p.role, p.status].filter(Boolean).map(esc).join('<span class="dot"></span>');
-          return '<p class="row-title">' + esc(p.title) + localTag(p) + '</p>' +
-            (meta || related('project', p.id) ? '<p class="row-meta">' + meta + related('project', p.id) + '</p>' : '') +
-            (full() && (p.budget || p.note || (p.files || []).length) ? '<div class="private-box">' +
-              (p.budget ? '<p class="row-meta">经费：' + esc(p.budget) + '</p>' : '') +
-              (p.note ? '<p class="row-meta">备注：' + esc(p.note) + '</p>' : '') +
-              ((p.files || []).length ? '<p class="row-meta">材料：' + p.files.map(function (f) { return link(f, f.split('/').pop()); }).join('<span class="dot"></span>') + '</p>' : '') +
-              '</div>' : '');
-        };
-        return '<ol class="rows">' + list.map(function (p) {
-          return '<li class="row"><span class="row-date row-date-wide">' + esc(p.years || year(p.date)) + '</span><div class="row-body">' + row(p) + '</div></li>';
-        }).join('') + '</ol>';
+        // 公开版只显示数量；本地版再列出 private/details.js 里的清单
+        var list = (S.softwareList || []).slice().sort(byDateDesc);
+        var n = full() && list.length ? list.length : (S.softwareCount || 0);
+        if (!n) return '';
+        return '<p class="lead">已登记计算机软件著作权 <strong>' + n + '</strong> 项</p>' + (full() && list.length ? yearRows(list, function (x) {
+          return '<p class="row-title">' + esc(x.title) + '<span class="local-tag">仅本地</span></p>' +
+            '<p class="row-meta">著作权人：' + esc(x.owners || '') + '</p>' +
+            '<p class="row-meta">' + esc(x.number || '') + (x.file ? '<span class="dot"></span>' + link(x.file, '证书') : '') + '</p>';
+        }) : '');
       }
     },
 
@@ -260,7 +322,15 @@
         var list = shown(S.competitions).sort(byDateDesc);
         if (!list.length) return '';
         var pub = list.filter(function (c) { return !c.localOnly; }).length;
-        return '<p class="lead">指导学生获奖 <strong>' + pub + '</strong> 项</p>' + yearRows(list, function (c) {
+        var lead = '指导学生获奖 <strong>' + pub + '</strong> 项';
+        if (full()) {   // 本地版：按指导教师排名区分（只有一位指导教师时也记为第一指导教师）
+          var first = list.filter(function (c) { return /第一/.test(c.advisor || ''); }).length;
+          var other = list.filter(function (c) { return c.advisor && !/第一/.test(c.advisor); }).length;
+          var none = list.length - first - other;
+          lead += '<span class="dot"></span>第一指导教师 <strong>' + first + '</strong> 项<span class="dot"></span>非第一指导教师 <strong>' + other + '</strong> 项' +
+            (none ? '<span class="dot"></span>未填 ' + none + ' 项' : '');
+        }
+        return '<p class="lead">' + lead + '</p>' + yearRows(list, function (c) {
           var rel = related('competition', c.id);
           var head = '<p class="row-title">' + esc(c.name) + '<span class="award">' + esc(c.award) + '</span>' + localTag(c) + '</p>' +
             (rel ? '<p class="row-meta">' + rel.replace('<span class="dot"></span>', '') + '</p>' : '');
@@ -290,8 +360,15 @@
         var list = shown(S.honors).sort(byDateDesc);
         if (!list.length) return '';
         return yearRows(list, function (h) {
+          var files = (h.files || []).filter(Boolean);
+          var comp = h.competition && shown(S.competitions).filter(function (c) { return c.id === h.competition; })[0];
           return '<p class="row-title">' + esc(h.title) + localTag(h) + '</p>' +
-            '<p class="row-meta">' + esc(h.level || '') + (h.file ? '<span class="dot"></span>' + link(h.file, '证书') : '') + '</p>';
+            '<p class="row-meta">' + esc(h.level || '') + (h.file ? '<span class="dot"></span>' + link(h.file, '证书') : '') + '</p>' +
+            (full() && (files.length || comp || h.note) ? '<div class="private-box">' +
+              (comp ? '<p class="row-meta">对应学生获奖：' + esc(comp.name) + ' ' + esc(comp.award) + '</p>' : '') +
+              (h.note ? '<p class="row-meta">备注：' + esc(h.note) + '</p>' : '') +
+              (files.length ? '<p class="row-meta">材料：' + files.map(function (f) { return link(f, f.split('/').pop()); }).join('<span class="dot"></span>') + '</p>' : '') +
+              '</div>' : '');
         });
       }
     },
@@ -348,7 +425,7 @@
   function hero() {
     var stats = [
       ['论文', shown(S.papers).length],
-      ['专利', shown(S.patents).length],
+      ['专利', full() && S.patentList ? shown(S.patentList).length : (S.patentCount || 0)],
       ['项目', shown(S.projects).length],
       ['学生', shown(S.students).length],
       ['竞赛获奖', shown(S.competitions).length]

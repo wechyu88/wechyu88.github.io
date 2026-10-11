@@ -305,7 +305,7 @@
   loadTheme(function () {
     if (!H.local) {
       document.querySelector('.wl-search').hidden = true;
-      return message('<p>此页面仅供本人在本地使用。</p><p><a href="./">返回主页</a></p>');
+      return message('<p>此页面仅供本人在本地使用。</p><p><a href="index.html">返回主页</a></p>');
     }
     H.ready(function () {
       loadData(function (data) {

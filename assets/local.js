@@ -15,9 +15,12 @@
   var PRIVATE_FIELDS = {
     competitions: ['project', 'students', 'advisor', 'files', 'note', 'photos'],
     students: ['photo', 'note', 'thesis', 'destination'],
-    projects: ['budget', 'note', 'files']
+    projects: ['budget', 'note', 'files'],
+    studentProjects: ['budget', 'note', 'files'],
+    honors: ['files', 'note', 'competition'],
+    papers: ['cas']
   };
-  var KIND_NAMES = { competitions: '竞赛', students: '学生', honors: '荣誉', papers: '论文', patents: '专利', news: '动态', projects: '项目' };
+  var KIND_NAMES = { competitions: '竞赛', students: '学生', honors: '荣誉', papers: '论文', patents: '专利', news: '动态', projects: '项目', studentProjects: '学生项目' };
 
   var H = window.HOMEPAGE = { local: LOCAL, full: false, warnings: [] };
 
@@ -35,6 +38,9 @@
         }
       });
     });
+    // 软件著作权：公开版只有 content.js 里的数量，本地再加上 details.js 里的清单
+    if (Array.isArray(D.software)) S.softwareList = D.software;
+    if (Array.isArray(D.patents)) S.patentList = D.patents;   // 专利同理
     // 2. 只在本地记录、不公开的条目
     var extra = D.extra || {};
     Object.keys(extra).forEach(function (kind) {
@@ -62,6 +68,12 @@
       var d = (D.competitions || {})[c.id];
       if (!d) w.push({ level: 'todo', text: label('competitions', c) + '（' + c.id + '）还没有本地记录。' });
       else if (!d.advisor) w.push({ level: 'todo', text: label('competitions', c) + '（' + c.id + '）还没填指导教师排名。' });
+    });
+    [['software', 'softwareCount', '软件著作权'], ['patents', 'patentCount', '专利']].forEach(function (k) {
+      var list = D[k[0]];
+      if (Array.isArray(list) && list.length !== (S[k[1]] || 0)) {
+        w.push({ level: 'todo', text: 'private/details.js 里有 ' + list.length + ' 项' + k[2] + '，content.js 的 ' + k[1] + ' 写的是 ' + (S[k[1]] || 0) + '，公开版显示的数量需要同步。' });
+      }
     });
     (S.students || []).forEach(function (s) {
       if (!s.hide && !s.id) w.push({ level: 'todo', text: label('students', s) + '缺少 id，无法对应本地照片。' });

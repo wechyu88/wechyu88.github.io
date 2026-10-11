@@ -73,27 +73,68 @@
       }), ordered: true });
     }
 
+    var sprojects = shown(S.studentProjects).sort(function (a, b) { return dateKey(b.years || b.date) - dateKey(a.years || a.date); });
+    if (sprojects.length) {
+      out.push({ h2: '指导学生项目（' + sprojects.length + ' 项）' });
+      out.push({ list: sprojects.map(function (p) {
+        return {
+          main: p.title + '，' + join([p.source, p.number], '，') + '，' + (p.years || ym(p.date)),
+          tag: p.role,
+          sub: p.status
+        };
+      }), ordered: true });
+    }
+
     var papers = shown(S.papers).sort(byDateDesc);
-    var journals = papers.filter(function (p) { return p.type !== 'conference'; });
-    var confs = papers.filter(function (p) { return p.type === 'conference'; });
-    var patents = shown(S.patents).sort(byDateDesc);
+    var PAPER_TAGS = { conference: '会议论文', abstract: '会议摘要', thesis: '学位论文', preprint: '预印本' };
+    var paperRank = function (p) {
+      var s = (p.cas || '') + ' ' + (p.level || ''), r = 9, m = s.match(/中科院\s*(\d)\s*区/);
+      if (m) r = +m[1] + (/Top/i.test(s) ? 0 : 0.2);
+      if (/CCF\s*A/i.test(s)) r = Math.min(r, 1);
+      if (/CCF\s*B/i.test(s)) r = Math.min(r, 1.5);
+      if (/CCF\s*C/i.test(s)) r = Math.min(r, 2.5);
+      return r;
+    };
+    var patents = shown(S.patentList).sort(byDateDesc);
     var books = shown(S.textbooks).sort(byDateDesc);
-    if (papers.length || patents.length || books.length) {
+    if (papers.length || patents.length || S.patentCount || books.length) {
       out.push({ h2: '学术成果' });
       function paperRef(p) {
         return {
           main: join([p.authors, p.title, join([p.venue, year(p.date)], ', ')], '. ') + '.',
           sub: join([p.doi ? 'DOI: ' + p.doi : ''], ''),
-          tag: p.level
+          tag: join([PAPER_TAGS[p.type], p.level, p.cas], ' · ')
         };
       }
-      if (journals.length) { out.push({ h3: '期刊论文（' + journals.length + ' 篇）' }); out.push({ list: journals.map(paperRef), ordered: true }); }
-      if (confs.length) { out.push({ h3: '会议论文（' + confs.length + ' 篇）' }); out.push({ list: confs.map(paperRef), ordered: true }); }
+      // 本人第一 / 通信 / 共同第一作者的排在前面
+      var mine = [P.name, P.nameEn].filter(Boolean);
+      var isLead = function (p) {
+        return String(p.authors || '').split(/[,，、;；]/).map(function (a) { return a.trim(); }).some(function (a, i) {
+          return mine.indexOf(a.replace(/[*#†\s]+$/, '').trim()) >= 0 && (i === 0 || /[*#]/.test(a));
+        });
+      };
+      var byRank = function (a, b) { return (paperRank(a) - paperRank(b)) || byDateDesc(a, b); };
+      [['第一作者 / 通信作者 / 共同第一作者', papers.filter(isLead)], ['合作论文', papers.filter(function (p) { return !isLead(p); })]].forEach(function (t) {
+        var list = t[1].sort(byRank);
+        if (list.length) { out.push({ h3: t[0] + '（' + list.length + ' 篇）' }); out.push({ list: list.map(paperRef), ordered: true }); }
+      });
+      if (!patents.length && S.patentCount) {
+        out.push({ h3: '授权发明专利（' + S.patentCount + ' 项）' });
+      }
       if (patents.length) {
         out.push({ h3: '授权专利（' + patents.length + ' 项）' });
         out.push({ list: patents.map(function (p) {
           return { main: join([p.inventors, p.title], '. ') + '.', sub: join([p.number, p.status, p.date], '，') };
         }), ordered: true });
+      }
+      var soft = (S.softwareList || []).slice().sort(byDateDesc);
+      if (soft.length) {
+        out.push({ h3: '软件著作权（' + soft.length + ' 项）' });
+        out.push({ list: soft.map(function (x) {
+          return { main: join([x.owners, x.title], '. ') + '.', sub: join([x.number, x.date], '，') };
+        }), ordered: true });
+      } else if (S.softwareCount) {
+        out.push({ h3: '软件著作权（' + S.softwareCount + ' 项）' });
       }
       if (books.length) {
         out.push({ h3: '编写教材（' + books.length + ' 部）' });
@@ -149,8 +190,10 @@
     var ev = [];
     shown(S.news).forEach(function (n) { ev.push({ date: n.date, cat: '动态', text: n.text }); });
     shown(S.projects).forEach(function (p) { ev.push({ date: p.date || p.years, cat: '项目', text: p.title + (p.source ? '（' + p.source + '）' : '') + (p.role ? '，' + p.role : '') }); });
+    shown(S.studentProjects).forEach(function (p) { ev.push({ date: p.date || p.years, cat: '学生项目', text: p.title + (p.source ? '（' + p.source + '）' : '') }); });
+    (S.softwareList || []).forEach(function (x) { ev.push({ date: x.date, cat: '软著', text: x.title + '（' + x.number + '）' }); });
     shown(S.papers).forEach(function (p) { ev.push({ date: p.date, cat: '论文', text: p.title + (p.venue ? '，' + p.venue : '') }); });
-    shown(S.patents).forEach(function (p) { ev.push({ date: p.date, cat: '专利', text: p.title + '（' + p.number + '）' }); });
+    shown(S.patentList).forEach(function (p) { ev.push({ date: p.date, cat: '专利', text: p.title + '（' + p.number + '）' }); });
     shown(S.textbooks).forEach(function (b) { ev.push({ date: b.date, cat: '教材', text: b.title + (b.publisher ? '，' + b.publisher : '') }); });
     shown(S.honors).forEach(function (h) { ev.push({ date: h.date, cat: '荣誉', text: h.title }); });
     shown(S.competitions).forEach(function (c) {
@@ -287,7 +330,7 @@
   var H = window.HOMEPAGE || {};
   if (!H.local) {
     document.querySelector('.cv-bar').hidden = true;
-    document.getElementById('paper').innerHTML = '<p class="muted">此页面仅供本人在本地使用。</p><p><a href="./">返回主页</a></p>';
+    document.getElementById('paper').innerHTML = '<p class="muted">此页面仅供本人在本地使用。</p><p><a href="index.html">返回主页</a></p>';
     return;
   }
   H.ready(function () {
