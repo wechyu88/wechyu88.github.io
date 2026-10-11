@@ -1,0 +1,86 @@
+/* =====================================================================
+ *  方案「白墙」：画廊式留白。纯白墙面、黑白照片、全黑体，
+ *  单栏居中，只有细线，没有任何色彩点缀。
+ *  在 content.js 里写 theme: 'white' 启用。
+ * ===================================================================== */
+
+:root {
+  --bg: #fcfcfa;
+  --surface: #ffffff;
+  --ink: #111110;
+  --ink-2: #32322f;
+  --ink-3: #5f5f5b;
+  --line: #e2e2dd;
+  --accent: #111110;
+  --serif: var(--sans);
+  --wrap: 880px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121211; --surface: #1a1a19;
+    --ink: #f4f4f1; --ink-2: #d2d2cd; --ink-3: #a3a39d;
+    --line: #2c2c2a; --accent: #f4f4f1;
+  }
+}
+
+body { font-size: 16.5px; line-height: 1.9; }
+a { border-bottom-color: var(--ink-3); }
+a:hover { color: var(--ink); border-color: var(--ink); }
+
+/* 顶栏：去掉毛玻璃，纯色 + 细线 */
+.topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.brand { font-weight: 600; letter-spacing: .2em; font-size: 16px; }
+.nav { gap: 26px; }
+.nav a { font-size: 14px; letter-spacing: .1em; }
+
+/* 首屏：小方形黑白照片在上，名字在下，单栏 */
+.hero { grid-template-columns: 1fr; padding-top: 96px; padding-bottom: 80px; }
+.hero-photo { order: -1; width: 136px; margin-bottom: 48px; }
+.portrait { padding: 0; border: 0; background: none; }
+.portrait img { aspect-ratio: 1 / 1; object-position: center 20%; filter: grayscale(1) contrast(1.05); }
+.eyebrow { font-size: 14px; letter-spacing: .16em; margin-bottom: 18px; }
+.hero-name { font-size: 52px; font-weight: 600; letter-spacing: .16em; }
+.hero-en { font-size: 14px; letter-spacing: .3em; }
+.hero-bio { margin-top: 40px; max-width: 36em; }
+.interests { font-size: 15px; color: var(--ink-2); }
+.stats { margin-top: 64px; border-top: 0; gap: 0; }
+.stats li { padding-top: 0; }
+.stats li + li { border-left: 0; padding-left: 0; }
+.stat-n { font-size: 34px; font-weight: 500; }
+
+/* 栏目：标题在上，内容在下，不再分左右栏 */
+.section-grid { grid-template-columns: 1fr; padding-top: 72px; padding-bottom: 72px; }
+.section-head { position: static; display: flex; align-items: baseline; gap: 16px; margin-bottom: 36px; }
+.section-no { display: none; }
+.section-head h2 { font-size: 22px; font-weight: 600; letter-spacing: .2em; }
+.section-en { margin: 0; font-size: 12px; letter-spacing: .3em; }
+
+/* 列表：去掉虚线，只留节奏 */
+.row, .rows .row:not(.row-first):not(:first-child) { border-top: 0; padding: 14px 0; }
+.row-first:not(:first-child) { margin-top: 18px; border-top: 1px solid var(--line) !important; padding-top: 28px; }
+.row-title { font-weight: 500; }
+.award { color: var(--ink); font-weight: 500; border: 1px solid var(--line); padding: 0 8px; letter-spacing: .04em; }
+.row-plain em { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.sub { letter-spacing: .2em; font-size: 13px; }
+
+/* 研究方向：无底色，两栏文字 */
+.cards { border: 0; gap: 48px; }
+.card { background: none; border: 0; padding: 0; }
+.card-no { color: var(--ink-3); }
+.card-title { font-weight: 600; font-size: 20px; }
+
+.plain-list li, .names li, .contact dt, .contact dd { border-top-style: solid; }
+.pl-tag { color: var(--ink-3); }
+.private-box { border-left-color: var(--ink); }
+.frame { padding: 0; border: 0; }
+.frame img { filter: grayscale(1); }
+.frame:hover img { filter: none; }
+
+@media (max-width: 760px) {
+  .hero { padding-top: 48px; }
+  .hero-photo { width: 112px; margin-bottom: 32px; }
+  .hero-name { font-size: 38px; }
+  .stats { grid-template-columns: repeat(2, 1fr); row-gap: 20px; }
+  .stats li:nth-child(even) { border-left: 0; padding-left: 0; }
+  .stats li:nth-child(n+3) { border-top: 0; }
+}

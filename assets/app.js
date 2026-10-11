@@ -330,7 +330,7 @@
         '<h1 class="hero-name">' + esc(P.name) + '</h1>' +
         '<p class="hero-en">' + esc(P.nameEn || '') + (P.title ? '<span class="hero-title">' + esc(P.title) + '</span>' : '') + '</p>' +
         '<div class="hero-bio">' + md(P.bio) + '</div>' +
-        (P.interests && P.interests.length ? '<p class="interests">' + P.interests.map(esc).join('<span class="slash">/</span>') + '</p>' : '') +
+        (P.interests && P.interests.length ? '<p class="interests">' + P.interests.map(function (x) { return '<span class="it">' + esc(x) + '</span>'; }).join('<span class="slash">/</span>') + '</p>' : '') +
         '<p class="hero-links">' +
           (P.email ? '<a href="mailto:' + esc(P.email) + '">' + esc(P.email) + '</a>' : '') +
           links.map(function (l) { return link(l.url, l.label); }).join('') +
@@ -417,5 +417,20 @@
     }
   }
 
-  if (window.HOMEPAGE) window.HOMEPAGE.ready(start); else start();
+  // 主题：content.js 里的 theme（'warm' 默认 / 'white' 白墙 / 'stone' 石灰）
+  function loadTheme(cb) {
+    var t = S.theme && S.theme !== 'warm' ? S.theme : '';
+    if (!t) { cb(); return; }
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'assets/theme-' + t + '.css';
+    l.onload = l.onerror = function () { cb(); };
+    // 紧跟在 style.css 后面，保证主题样式覆盖基础样式
+    var base = document.querySelector('link[href$="style.css"]');
+    if (base) base.insertAdjacentElement('afterend', l); else document.head.appendChild(l);
+  }
+
+  loadTheme(function () {
+    if (window.HOMEPAGE) window.HOMEPAGE.ready(start); else start();
+  });
 })();

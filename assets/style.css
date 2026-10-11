@@ -263,3 +263,4 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .private-box { margin-top: 8px; padding: 10px 14px; background: var(--surface); border-left: 2px solid var(--accent); }
 .private-box .row-meta:first-child { margin-top: 0; }
 .private-missing { color: #a2381c; }
+.interests .it { white-space: nowrap; }

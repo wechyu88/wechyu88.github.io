@@ -1,0 +1,63 @@
+/* =====================================================================
+ *  方案「石灰」：左侧固定门牌（姓名 + 目录），右侧内容。
+ *  石灰墙面的灰白、深橄榄绿点缀、宋体标题，像建筑事务所的作品集。
+ *  在 content.js 里写 theme: 'stone' 启用。
+ * ===================================================================== */
+
+:root {
+  --bg: #efeee9;
+  --surface: #f7f6f2;
+  --ink: #181a17;
+  --ink-2: #353833;
+  --ink-3: #5d615a;
+  --line: #d4d2ca;
+  --accent: #46594a;
+  --side: 272px;
+  --wrap: 980px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171816; --surface: #1f201d;
+    --ink: #eeefea; --ink-2: #cfd1ca; --ink-3: #a1a59c;
+    --line: #34362f; --accent: #9db8a2;
+  }
+}
+
+/* 桌面：左侧固定栏 */
+@media (min-width: 1100px) {
+  .topbar {
+    position: fixed; top: 0; bottom: 0; left: 0; width: var(--side);
+    background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-bottom: 0; border-right: 1px solid var(--line);
+  }
+  .topbar-inner {
+    height: 100%; max-width: none; margin: 0;
+    flex-direction: column; align-items: flex-start; justify-content: flex-start;
+    gap: 40px; padding: 72px 40px 40px;
+  }
+  .brand { font-size: 28px; letter-spacing: .14em; padding-bottom: 20px; border-bottom: 2px solid var(--ink); }
+  .nav { flex-direction: column; gap: 4px; overflow: visible; }
+  .nav a { font-size: 15px; padding: 6px 0 6px 16px; letter-spacing: .12em; }
+  .nav a::after { left: 0; right: auto; top: 50%; bottom: auto; width: 6px; height: 1px; transform: scaleX(0); transform-origin: left; background: var(--accent); }
+  .nav a.active { color: var(--accent); font-weight: 600; }
+  .nav a.active::after { transform: scaleX(1); }
+
+  main, .footer, .local-banner { margin-left: var(--side); }
+  .section { scroll-margin-top: 0; }
+  .section-head { top: 40px; }
+  .hero { padding-top: 96px; }
+}
+
+.hero-name { letter-spacing: .12em; }
+.portrait { padding: 0; border: 0; background: none; box-shadow: 18px 18px 0 var(--line); }
+.portrait img { filter: saturate(.7); }
+.stat-n { color: var(--accent); }
+
+.section-no { color: var(--accent); }
+.section-head h2 { font-size: 28px; }
+.section-head::after { content: ""; display: block; width: 32px; height: 2px; margin-top: 18px; background: var(--accent); }
+
+.card { background: var(--surface); }
+.card-no, .pl-tag, .award, .row-plain em { color: var(--accent); }
+.award { border-bottom: 0; }
+.frame { background: none; border: 0; padding: 0; }
