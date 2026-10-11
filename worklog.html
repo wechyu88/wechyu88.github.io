@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工作日志</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/worklog.css">
+</head>
+<body>
+  <header class="wl-bar">
+    <div class="wl-bar-inner">
+      <a class="wl-back" href="./">← 返回主页</a>
+      <h1 class="wl-title">工作日志</h1>
+      <span class="wl-updated" id="wl-updated"></span>
+      <label class="wl-search">
+        <span class="sr-only">搜索</span>
+        <input id="wl-q" type="search" placeholder="搜索：关键词、项目名…" autocomplete="off">
+      </label>
+    </div>
+  </header>
+
+  <main class="wl-main" id="wl-main"></main>
+
+  <!-- 数据来自 private/worklog/data.js（只在本机存在），由 tools/worklog-sync.js 生成 -->
+  <script src="content.js"></script>
+  <script src="assets/local.js"></script>
+  <script src="assets/worklog.js"></script>
+</body>
+</html>

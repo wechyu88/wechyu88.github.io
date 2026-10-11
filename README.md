@@ -125,6 +125,27 @@ private/          ★ 私密记录，只在你自己电脑上，不会上传到�
 
 指导教师排名填了的话，会自动写进简历，例如“（第二指导教师）”。
 
+### 工作日志（只在本地）
+
+把你在这台电脑上和 **Claude Code**、**Codex** 的对话，自动整理成按天的工作日志：
+日历上能看出哪天做得多，点某一天能看到每段对话的项目、时间、你的每条请求、助手回复和改动过的文件，还能全文搜索。
+
+第一次在网站文件夹里打开终端，运行两条命令：
+
+```
+node tools/worklog-sync.js            # 先整理一次现有记录
+node tools/worklog-sync.js --install  # 以后自动更新
+```
+
+之后 Claude Code 每次回复完、Codex 每轮结束时都会自动更新。本地打开主页，点页脚的「工作日志」即可查看。
+
+- 想让 Claude 给每天写一段中文小结：`node tools/worklog-sync.js --summarize`（会消耗少量额度，只写已结束的日子）
+- 不想记录某些项目：在 `private/worklog/config.json` 的 `exclude` 里写项目文件夹名
+- 取消自动更新：`node tools/worklog-sync.js --uninstall`
+
+日志只写在 `private/worklog/`，不会进入公开仓库；公开网站上的 `worklog.html` 只显示“仅供本人在本地使用”。
+注意：对话里如果贴过密码、密钥等，也会被摘录进日志（只存在你自己的电脑和私有仓库里）。
+
 ---
 
 ## 二、本地改好 → 网站自动同步；多台电脑同步

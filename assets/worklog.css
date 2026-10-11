@@ -1,0 +1,93 @@
+/* 工作日志页面（只在本地使用）。颜色取自主页的主题变量。 */
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wl-bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.wl-bar-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.wl-back { border: 0; color: var(--ink-2); font-size: 15px; }
+.wl-title { font-family: var(--serif); font-size: 22px; letter-spacing: .1em; }
+.wl-updated { font-size: 14px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.wl-search { margin-left: auto; flex: 0 1 300px; }
+.wl-search input { width: 100%; font: inherit; font-size: 15px; padding: 8px 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 0; }
+.wl-search input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+.wl-main { max-width: 1280px; margin: 0 auto; padding: 32px 24px 80px; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 40px; align-items: start; }
+.wl-side { position: sticky; top: 90px; display: grid; gap: 28px; max-height: calc(100vh - 110px); overflow: auto; }
+
+/* 日历 */
+.wl-cal { background: var(--surface); border: 1px solid var(--line); padding: 18px; }
+.wl-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.wl-cal-head strong { font-family: var(--serif); font-size: 17px; letter-spacing: .06em; }
+.wl-nav { width: 32px; height: 32px; font-size: 20px; color: var(--ink-2); border: 1px solid var(--line); }
+.wl-nav:hover { color: var(--ink); border-color: var(--ink-3); }
+.wl-week, .wl-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.wl-week span { text-align: center; font-size: 12px; color: var(--ink-3); padding-bottom: 4px; }
+.wl-cell { aspect-ratio: 1; display: grid; place-items: center; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+button.wl-cell { color: var(--ink); cursor: pointer; }
+.wl-cell.lv1 { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.wl-cell.lv2 { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.wl-cell.lv3 { background: color-mix(in srgb, var(--accent) 52%, transparent); color: var(--surface); }
+.wl-cell.lv4 { background: var(--accent); color: var(--surface); }
+.wl-cell.is-sel { outline: 2px solid var(--ink); outline-offset: 1px; }
+.wl-cell.is-empty { visibility: hidden; }
+.wl-legend { margin-top: 10px; display: flex; align-items: center; gap: 4px; justify-content: flex-end; font-size: 12px; color: var(--ink-3); }
+.wl-legend i { width: 12px; height: 12px; display: inline-block; }
+.wl-legend .lv1 { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.wl-legend .lv2 { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.wl-legend .lv3 { background: color-mix(in srgb, var(--accent) 52%, transparent); }
+.wl-legend .lv4 { background: var(--accent); }
+
+/* 日期列表 */
+.wl-days-title { font-size: 14px; color: var(--ink-3); letter-spacing: .06em; margin-bottom: 8px; }
+.wl-days ul { list-style: none; margin: 0; padding: 0; }
+.wl-day { width: 100%; text-align: left; padding: 10px 12px; display: grid; gap: 2px; border-left: 2px solid transparent; }
+.wl-day:hover { background: var(--surface); }
+.wl-day.is-sel { background: var(--surface); border-left-color: var(--accent); }
+.wl-day-date { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.wl-day-date em { font-style: normal; font-weight: 400; font-size: 14px; color: var(--ink-3); margin-left: 6px; }
+.wl-day-meta { font-size: 13px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 详情 */
+.wl-detail { min-width: 0; }
+.wl-detail-head h2 { font-family: var(--serif); font-size: 30px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.wl-detail-head h2 span { font-size: 18px; font-weight: 400; color: var(--ink-3); margin-left: 8px; }
+.wl-detail-head p { margin-top: 6px; color: var(--ink-2); font-size: 15px; }
+.wl-summary { margin-top: 24px; padding: 18px 20px; background: var(--surface); border-left: 3px solid var(--accent); line-height: 1.9; }
+.wl-label { font-size: 13px; letter-spacing: .12em; color: var(--ink-3); margin: 18px 0 6px; }
+.wl-summary .wl-label { margin-top: 0; }
+
+.wl-session { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+.wl-session > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.wl-session > header strong { font-size: 19px; }
+.wl-tool { font-size: 12px; font-weight: 600; letter-spacing: .06em; padding: 2px 8px; border: 1px solid currentColor; }
+.wl-tool-claude { color: var(--accent); }
+.wl-tool-codex { color: var(--ink-2); }
+.wl-time { font-size: 15px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.wl-machine { font-size: 13px; color: var(--ink-3); }
+
+.wl-prompts, .wl-replies ol { list-style: none; margin: 0; padding: 0; }
+.wl-prompts li, .wl-replies li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-top: 1px dashed var(--line); }
+.wl-prompts li:first-child, .wl-replies li:first-child { border-top: 0; }
+.wl-prompts time, .wl-replies time { font-size: 14px; color: var(--ink-3); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.wl-prompts span { overflow-wrap: anywhere; }
+.wl-replies { margin-top: 12px; }
+.wl-replies summary { cursor: pointer; font-size: 15px; color: var(--accent); font-weight: 600; padding: 4px 0; }
+.wl-replies span { color: var(--ink-2); font-size: 15px; overflow-wrap: anywhere; }
+.wl-files { display: flex; flex-wrap: wrap; gap: 6px; }
+.wl-files code { font-size: 13px; padding: 2px 8px; background: var(--surface); border: 1px solid var(--line); }
+.wl-cwd { margin-top: 10px; font-size: 12px; color: var(--ink-3); overflow-wrap: anywhere; }
+mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: inherit; }
+
+.wl-msg { grid-column: 1 / -1; max-width: 640px; padding: 40px 0; }
+.wl-msg h2 { font-family: var(--serif); margin-bottom: 12px; }
+.wl-msg pre { margin: 8px 0 20px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); overflow-x: auto; }
+.wl-empty { color: var(--ink-3); }
+.wl-search[hidden] { display: none; }
+
+@media (max-width: 900px) {
+  .wl-main { grid-template-columns: 1fr; padding: 20px 16px 64px; gap: 28px; }
+  .wl-side { position: static; max-height: none; overflow: visible; }
+  .wl-bar-inner { padding: 12px 16px; }
+  .wl-search { flex-basis: 100%; }
+  .wl-detail-head h2 { font-size: 24px; }
+}

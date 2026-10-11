@@ -368,7 +368,7 @@
     var H = window.HOMEPAGE || {};
     document.getElementById('footer').innerHTML = '<span>' + esc(S.footer || '') + '</span>' +
       '<span class="footer-links">' +
-      (H.local ? '<a href="cv.html">导出简历</a><a href="cv.html#timeline">导出时间线</a>' : '') +
+      (H.local ? '<a href="worklog.html">工作日志</a><a href="cv.html">导出简历</a><a href="cv.html#timeline">导出时间线</a>' : '') +
       '<a href="#top">回到顶部 ↑</a></span>';
     if (H.banner) main.insertAdjacentHTML('beforebegin', H.banner());
     if (P.name) document.title = P.name + (P.affiliation ? ' · ' + P.affiliation : '');
