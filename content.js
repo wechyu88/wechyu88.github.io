@@ -24,11 +24,11 @@ window.SITE = {
   profile: {
     name: '温程远',
     nameEn: 'Chengyuan Wen',
-    title: '讲师',
+    title: '副教授',
     affiliation: '浙江海洋大学',
     department: '信息工程学院',
     avatar: 'photos/avatar.jpg',
-    email: 'wenchengyuan@zjou.edu.cn',
+    email: 'wechyu@zjou.edu.cn',
     address: '浙江省舟山市定海区临城街道海大南路1号，浙江海洋大学信息工程学院',
     postcode: '316022',
     phone: '',            // 留空就不显示
@@ -78,7 +78,8 @@ window.SITE = {
   ],
 
   work: [
-    { years: '2019 – 今', position: '讲师', place: '浙江海洋大学 信息工程学院' },
+    { years: '2019 – 2025', position: '讲师', place: '浙江海洋大学 信息工程学院' },
+    { years: '2026 – 至今', position: '副教授', place: '浙江海洋大学 信息工程学院' },
   ],
 
   // ------------------------------------------------------------------
