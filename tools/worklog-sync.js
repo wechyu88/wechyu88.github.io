@@ -379,7 +379,13 @@ function main() {
     process.exit(0);
   }
   const sessions = collect();
-  writeFileSafe(path.join(OUT_DIR, MACHINE + '.json'), JSON.stringify(buildMachineFile(sessions)));
+  // 只有对话内容真的变化时才改写本机文件；分行写入，方便在 GitHub Desktop 里看改动
+  const machineFile = path.join(OUT_DIR, MACHINE + '.json');
+  const next = buildMachineFile(sessions);
+  const prev = readJSON(machineFile, null);
+  if (!prev || JSON.stringify(prev.sessions) !== JSON.stringify(next.sessions)) {
+    writeFileSafe(machineFile, JSON.stringify(next, null, 1) + '\n');
+  }
   let list = rebuildData();
   if (args.includes('--summarize')) { summarize(list); insights(list); list = rebuildData(); }
   if (process.stdout.isTTY) console.log('工作日志已更新：' + list.length + ' 天，' + sessions.length + ' 段对话。');
