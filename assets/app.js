@@ -131,6 +131,35 @@
     }).join('') + '</ol>';
   }
 
+  // 学期 '2025-2026-1' → '2025–2026 学年 第一学期'
+  function termLabel(t) {
+    var m = String(t || '').match(/(\d{4})\D+(\d{4})\D+([12])/);
+    return m ? m[1] + '–' + m[2] + ' 学年 第' + (m[3] === '1' ? '一' : '二') + '学期' : String(t || '');
+  }
+  function termKey(t) { var m = String(t || '').match(/(\d{4})\D+\d{4}\D+([12])/); return m ? +m[1] * 10 + +m[2] : 0; }
+
+  // 每学期授课记录（本地）：按学期从新到旧，开头一行汇总
+  function teachingLog(log) {
+    var terms = {}, hours = 0, names = {};
+    log.forEach(function (c) {
+      (terms[c.term] = terms[c.term] || []).push(c);
+      hours += +c.hours || 0;
+      names[c.course] = 1;
+    });
+    var keys = Object.keys(terms).sort(function (a, b) { return termKey(b) - termKey(a); });
+    return '<h3 class="sub">授课记录<span class="local-tag">仅本地</span></h3>' +
+      '<p class="lead">' + keys.length + ' 个学期<span class="dot"></span><strong>' + Object.keys(names).length + '</strong> 门课程' +
+      (hours ? '<span class="dot"></span>共 <strong>' + hours + '</strong> 学时' : '') + '</p>' +
+      '<ol class="rows">' + keys.map(function (k) {
+        return '<li class="row row-wide"><span class="row-date row-date-wide">' + esc(termLabel(k).replace(' 学年 ', '\n')).replace('\n', '<br>') + '</span><div class="row-body">' +
+          terms[k].map(function (c) {
+            var meta = [c.level, c.classes, c.students ? c.students + ' 人' : '', c.hours ? c.hours + ' 学时' : '', c.type].filter(Boolean).map(esc).join('<span class="dot"></span>');
+            return '<p class="row-title">' + esc(c.course) + '</p>' + (meta ? '<p class="row-meta">' + meta + '</p>' : '') +
+              (c.note ? '<p class="row-meta row-quiet">' + esc(c.note) + '</p>' : '');
+          }).join('<div class="term-gap"></div>') + '</div></li>';
+      }).join('') + '</ol>';
+  }
+
   // ---------- 各栏目 ----------
   var SECTIONS = {
     news: {
@@ -268,6 +297,20 @@
       zh: '教学', en: 'Teaching',
       html: function () {
         var courses = shown(S.courses), books = shown(S.textbooks).sort(byDateDesc), out = '';
+        var awards = full() ? shown(S.teachingAwards).sort(byDateDesc) : [];
+        var log = full() ? shown(S.teachingLog) : [];
+        if (awards.length) {
+          out += '<h3 class="sub">教学获奖 <span class="count">' + awards.length + '</span><span class="local-tag">仅本地</span></h3>' + yearRows(awards, function (a) {
+            var files = (a.files || []).filter(Boolean);
+            return '<p class="row-title">' + esc(a.title) + (a.rank ? '<span class="award">' + esc(a.rank) + '</span>' : '') + '</p>' +
+              '<p class="row-meta">' + [a.level, a.issuer, a.role].filter(Boolean).map(esc).join('<span class="dot"></span>') + '</p>' +
+              (a.note || files.length ? '<div class="private-box">' +
+                (a.note ? '<p class="row-meta">备注：' + esc(a.note) + '</p>' : '') +
+                (files.length ? '<p class="row-meta">材料：' + files.map(function (f) { return link(f, f.split('/').pop()); }).join('<span class="dot"></span>') + '</p>' : '') +
+                '</div>' : '');
+          });
+        }
+        if (log.length) out += teachingLog(log);
         if (courses.length) {
           out += '<h3 class="sub">授课课程</h3><ul class="plain-list">' + courses.map(function (c) {
             return '<li><span class="pl-main">' + esc(c.name) + '</span><span class="pl-tag">' + esc(c.level || '') + '</span>' +

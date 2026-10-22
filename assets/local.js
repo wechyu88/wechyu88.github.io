@@ -41,6 +41,9 @@
     // 软件著作权：公开版只有 content.js 里的数量，本地再加上 details.js 里的清单
     if (Array.isArray(D.software)) S.softwareList = D.software;
     if (Array.isArray(D.patents)) S.patentList = D.patents;   // 专利同理
+    // 教学：教学获奖、每学期授课记录（只在本地）
+    if (Array.isArray(D.teachingAwards)) S.teachingAwards = D.teachingAwards;
+    if (Array.isArray(D.teaching)) S.teachingLog = D.teaching;
     // 2. 只在本地记录、不公开的条目
     var extra = D.extra || {};
     Object.keys(extra).forEach(function (kind) {

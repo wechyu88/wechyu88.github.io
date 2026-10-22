@@ -97,6 +97,21 @@ private/          ★ 私密记录，只在你自己电脑上，不会上传到�
 'proj-002': { budget: '10 万元', files: ['private/materials/proj-002/任务书.pdf'], note: '' },
 ```
 
+### 教学获奖、每学期授课记录（只在本地）
+
+写在 `private/details.js` 里，公开网站看不到，本地主页「教学」栏和导出的简历里会出现：
+
+```js
+teachingAwards: [
+  { title: '浙江海洋大学青年教师教学竞赛', rank: '一等奖', level: '校级', issuer: '浙江海洋大学',
+    date: '2024-11', files: ['private/materials/teaching/2024-教学竞赛证书.pdf'] },
+],
+teaching: [
+  // term：学年-学期，1 = 第一学期（秋季），2 = 第二学期（春季）
+  { term: '2025-2026-1', course: '人工智能导论', level: '本科', classes: '计科2301-2302', students: 86, hours: 48 },
+],
+```
+
 ### 加论文 / 专利 / 荣誉
 
 找到 `papers` / `patents` / `honors`，复制一条改内容。PDF 放进 `files/`，填 `pdf: 'files/xxx.pdf'`。

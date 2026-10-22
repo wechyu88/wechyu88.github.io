@@ -144,7 +144,27 @@
       }
     }
 
-    var courses = shown(S.courses);
+    var tAwards = shown(S.teachingAwards).sort(byDateDesc);
+    if (tAwards.length) {
+      out.push({ h2: '教学获奖（' + tAwards.length + ' 项）' });
+      tAwards.forEach(function (x) { out.push({ item: ym(x.date), main: x.title + (x.rank ? '，' + x.rank : ''), tag: x.level, sub: join([x.issuer, x.role], '，') }); });
+    }
+    var tLog = shown(S.teachingLog);
+    if (tLog.length) {
+      // 按课程汇总：课程名（层次）——讲授学期、总学时
+      var byCourse = {};
+      tLog.forEach(function (c) {
+        var k = c.course + (c.level ? '（' + c.level + '）' : '');
+        var b = byCourse[k] || (byCourse[k] = { terms: [], hours: 0 });
+        b.terms.push(String(c.term || '')); b.hours += +c.hours || 0;
+      });
+      out.push({ h2: '主讲课程（' + Object.keys(byCourse).length + ' 门）' });
+      out.push({ list: Object.keys(byCourse).map(function (k) {
+        var b = byCourse[k];
+        return { main: k, sub: '讲授 ' + b.terms.length + ' 个学期（' + b.terms.sort().join('、') + '）' + (b.hours ? '，共 ' + b.hours + ' 学时' : '') };
+      }), ordered: false });
+    }
+    var courses = tLog.length ? [] : shown(S.courses);
     if (courses.length) {
       out.push({ h2: '授课课程' });
       out.push({ list: courses.map(function (c) { return { main: c.name + (c.level ? '（' + c.level + '）' : '') }; }), ordered: false });
