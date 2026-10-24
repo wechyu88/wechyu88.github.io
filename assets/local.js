@@ -41,11 +41,13 @@
     // 软件著作权：公开版只有 content.js 里的数量，本地再加上 details.js 里的清单
     if (Array.isArray(D.software)) S.softwareList = D.software;
     if (Array.isArray(D.patents)) S.patentList = D.patents;   // 专利同理
-    // 教学：教学获奖、每学期授课记录（只在本地）
-    if (Array.isArray(D.teachingAwards)) S.teachingAwards = D.teachingAwards;
-    if (Array.isArray(D.teaching)) S.teachingLog = D.teaching;
-    // 2. 只在本地记录、不公开的条目
+    // 教学：教学获奖、每学期授课记录（只在本地）；误放进 extra 里也认
     var extra = D.extra || {};
+    var tAwards = D.teachingAwards || extra.teachingAwards, tLog = D.teaching || extra.teaching;
+    delete extra.teachingAwards; delete extra.teaching;
+    if (Array.isArray(tAwards)) S.teachingAwards = tAwards;
+    if (Array.isArray(tLog)) S.teachingLog = tLog;
+    // 2. 只在本地记录、不公开的条目
     Object.keys(extra).forEach(function (kind) {
       (extra[kind] || []).forEach(function (item) {
         item.localOnly = true;
@@ -78,6 +80,9 @@
         w.push({ level: 'todo', text: 'private/details.js 里有 ' + list.length + ' 项' + k[2] + '，content.js 的 ' + k[1] + ' 写的是 ' + (S[k[1]] || 0) + '，公开版显示的数量需要同步。' });
       }
     });
+    var ex = D.extra || {};
+    if (!D.teaching && !ex.teaching) w.push({ level: 'todo', text: 'private/details.js 里还没有每学期授课记录（teaching），教学栏不会显示授课记录。' });
+    if (!D.teachingAwards && !ex.teachingAwards) w.push({ level: 'todo', text: 'private/details.js 里还没有教学获奖（teachingAwards）。' });
     (S.students || []).forEach(function (s) {
       if (!s.hide && !s.id) w.push({ level: 'todo', text: label('students', s) + '缺少 id，无法对应本地照片。' });
     });
@@ -101,8 +106,18 @@
   H.ready = function (cb) {
     var S = window.SITE || {};
     if (!LOCAL) { cb(); return; }
+    // details.js 写错一个逗号整份都读不进来，这里抓住错误并提示在第几行
+    var bad = null;
+    function onErr(e) { if (/private\/details\.js/.test(e.filename || '')) bad = e; }
+    window.addEventListener('error', onErr);
     loadScript('private/details.js', function (ok) {
-      if (ok) {
+      window.removeEventListener('error', onErr);
+      if (ok && (bad || !window.PRIVATE)) {
+        check(S, null);
+        H.warnings.unshift({ level: 'danger', text: 'private/details.js 有格式错误' +
+          (bad && bad.lineno ? '（第 ' + bad.lineno + ' 行附近：' + bad.message + '）' : '') +
+          '，本地详细信息全部没有加载，当前显示的是公开版。常见原因：粘贴的新内容和前后条目之间少了逗号，或括号没有配对。' });
+      } else if (ok) {
         var D = window.PRIVATE || {};
         H.full = true;
         check(S, D);   // 先检查公开文件本身，再合并
